@@ -8,9 +8,10 @@
 // "move4": mossa 4
 
 let pokemons = Array()
-let pokemonTextRaw = Array()
+let pokemonTextRaw = Array() // Contiene tutti i pokemon così come sono inseriti nel textarea
 
 function getAllPokemonsTextRaw(){
+    // Prendo tutti i pokemon nel textarea, dividendoli per ogni \n\n e poi li metto nell'array allPokemons
     let allPokemons = document.getElementById("pokeTeamText").value.split("\n\n");
     allPokemons.forEach(element => {
         pokemonTextRaw.push(element)
@@ -19,6 +20,7 @@ function getAllPokemonsTextRaw(){
 }
 
 function parseRawPokemonInfo(){
+    // Per ogni pokemon memorizzato in pokemonTextRaw, trovo ogni valore importante e lo memorizzo come oggetto in pokemons
     pokemonTextRaw.forEach(element => {
         pokemons.push({
             "name": getPokemonNameRaw(element),
@@ -33,7 +35,7 @@ function parseRawPokemonInfo(){
 }
 
 function getPokemonNameRaw(pokemonRaw){
-    // Prendo, prendo il nome del pokemon che è la sottostringa prima del primo spazio
+    // Prendo il nome del pokemon: prima riga, primo valore separato dallo spazio
     let name = pokemonRaw.split(" ")[0]
     
     // Eccezioni per pokemon che si distinguono per il genere
@@ -48,18 +50,19 @@ function getPokemonNameRaw(pokemonRaw){
 }
 
 function getPokemonItemRaw(pokemonRaw){
-    // Prima riga, rendo l'oggetto del pokemon che è la sottostringa dopo la @, escluso il primo spazio
+    // Prima riga, prendo l'oggetto del pokemon che è la sottostringa dopo la @, escluso il primo spazio
     let item = pokemonRaw.split("\n")[0].split("@")[1]
     return item.substring(1, item.length-2)
 }
 
 function getPokemonAbilityRaw(pokemonRaw){
-    // Seconda riga, prendo il nome dolo lo spazio
+    // Seconda riga, prendo il nome dopo lo spazio
     let ability = pokemonRaw.split("\n")[1].split(": ")[1]
     return ability.substring(0, ability.length-2)
 }
 
 function getPokemonMovesRaw(pokemonRaw, index){
+    // Cerco tutte le mosse di un certo pokemon e le memorizzo in moves, dopo ritorno quella richiesta da "index"
     // index va da 1 a 4
     let rows = pokemonRaw.split("\n")
     let moves = Array()
