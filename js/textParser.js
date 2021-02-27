@@ -7,8 +7,8 @@
 // "move3": mossa 3
 // "move4": mossa 4
 
-var pokemons = Array()
-var pokemonTextRaw = Array()
+let pokemons = Array()
+let pokemonTextRaw = Array()
 
 function getAllPokemonsTextRaw(){
     let allPokemons = document.getElementById("pokeTeamText").value.split("\n\n");
@@ -34,7 +34,17 @@ function parseRawPokemonInfo(){
 
 function getPokemonNameRaw(pokemonRaw){
     // Prendo, prendo il nome del pokemon che è la sottostringa prima del primo spazio
-    return pokemonRaw.split(" ")[0]
+    let name = pokemonRaw.split(" ")[0]
+    
+    // Eccezioni per pokemon che si distinguono per il genere
+    if(name == "Indeedee"){
+        if(pokemonRaw.split(" ")[1] == "(M)")
+            name = "Indeedee-male"
+        else
+            name = "Indeedee-female"
+    }
+    
+    return name;
 }
 
 function getPokemonItemRaw(pokemonRaw){
@@ -59,11 +69,6 @@ function getPokemonMovesRaw(pokemonRaw, index){
         }
     })
     return moves[index-1]
-}
-
-function parseTeamText(){
-    getAllPokemonsTextRaw()
-    parseRawPokemonInfo()
 }
 
 /* ESEMPIO:
