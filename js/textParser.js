@@ -15,7 +15,6 @@ function getAllPokemonsTextRaw(){
     let allPokemons = document.getElementById("pokeTeamText").value.split("\n\n");
     allPokemons.forEach(element => {
         pokemonTextRaw.push(element)
-        console.log(element)
     });
 }
 
