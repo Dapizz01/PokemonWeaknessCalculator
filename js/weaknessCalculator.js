@@ -10,28 +10,56 @@ var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
     }
 */
 
+var teamWeaknesses = {
+    normal: 1,
+    fighting: 1,
+    flying: 1,
+    poison: 1,
+    ground: 1,
+    rock: 1,
+    bug: 1,
+    ghost: 1,
+    steel: 1,
+    fire: 1,
+    water: 1,
+    grass: 1,
+    electric: 1,
+    psychic: 1,
+    ice: 1,
+    dragon: 1,
+    dark: 1,
+    fairy: 1
+}
+
 // Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa
 function getPokemonsWeaknesses(){
     getAllPokemonsTextRaw()
     parseRawPokemonInfo()
-    getPokemonsAndFindWeaknesses()
+    fetchInfoAndCalculateWeaknesses()
 }
 
-function getPokemonsAndFindWeaknesses(){
-    pokemons.forEach((element) => {
-        fetch("https://pokeapi.co/api/v2/pokemon/" + element.name.toLowerCase()).then((data) => {
-            data.json().then((data) => {
-                // Prendo i dati ottenuti e li metto in pokemonsData
-                pokemonsData.push(data)
-                // Aggiorno pokemonDataWeaknesses, attraverso addPokemonWeakness()
-                addPokemonWeakness(data.name)
-                evaluatePokemonWeaknesses(data)
-            })
-        })
-    })
+async function fetchInfoAndCalculateWeaknesses(){
+    // Ciclo for (NON FOREACH) che itera ogni pokemon in "pokemons"
+    for(let i = 0; i < pokemons.length; i++){
+        // pkmn -> Pokemon corrente
+        let pkmn = pokemons[i]
+        // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono)
+        let fetchResult = await fetch("https://pokeapi.co/api/v2/pokemon/" + pkmn.name.toLowerCase())
+        // Trasformazione in json del risultato
+        let jsonResult = await fetchResult.json()
+
+        // Aggiungo il json del pokemon in pokemonsData
+        pokemonsData.push(jsonResult)
+        // Aggiungo un nuovo elemento in addPokemonWeakness con il nome di quel pokemon
+        addPokemonWeakness(jsonResult.name)
+        // Trovo i tipi non efficaci / superefficaci chiamando evaluatePokemonWeakness()
+        evaluatePokemonWeaknesses(jsonResult)
+    }
+    // Calcolo di tutte le debolezze del team
+    calculateTeamWeakness()
 }
 
-function evaluatePokemonWeaknesses(pkmn){
+async function evaluatePokemonWeaknesses(pkmn){
     // Analizzo tutte le debolezze e l'efficacia della tipi di un solo pokemon "pkmn", SOLO IN DIFESA, NON IN ATTACCO
     let types = Array() // Insieme dei tipi di un pokemon
     
@@ -40,18 +68,22 @@ function evaluatePokemonWeaknesses(pkmn){
         types.push(pkmn.types[i])
     }
 
-    // Per ogni tipo
-    types.forEach((currentType) => {
-        // Prendo da pokeAPI tutti le relazioni del tipo considerato con gli altri tipi e aggiorno di conseguenza pokemonDataWeaknesses attraverso updateWeaknesses(...)
-        fetch(currentType.type.url).then((data) => {
-            data.json().then((result) => {
-                let a = updateWeaknesses(pkmn.name, result.damage_relations.double_damage_from, 2)
-                a = updateWeaknesses(pkmn.name, result.damage_relations.no_damage_from, 0)
-                a = updateWeaknesses(pkmn.name, result.damage_relations.half_damage_from, 0.5)
-            })
-        })
-    })
-    // Aggiorno le debolezze tenendo conto delle abilità e degli item
+    // Ciclo for che itera per ogni tipo trovato
+    for(let i = 0; i < types.length; i++){
+        // currentType è il tipo corrente
+        let currentType = types[i]
+        // Fetch della pagina di pokeAPI di un certo tipo
+        let result = await fetch(currentType.type.url)
+        // Trasformo la promise di fetch in json
+        let json = await result.json()
+
+        // Aggiorno le debolezze del pokemon, modificando i tipi superefficaci, inefficaci, poco efficaci
+        updateWeaknesses(pkmn.name, json.damage_relations.double_damage_from, 2)
+        updateWeaknesses(pkmn.name, json.damage_relations.no_damage_from, 0)
+        updateWeaknesses(pkmn.name, json.damage_relations.half_damage_from, 0.5)
+    }
+
+    // Aggiorno i tipi superefficaci / poco efficaci anche in base al tipo di abilità o di item che un certo pokemon possiede
     updateExceptionWeaknesses(pkmn)
 }
 
@@ -190,3 +222,39 @@ function updateExceptionWeaknesses(pkmn){
         }
     })
 }
+
+function calculateTeamWeakness(){
+    // Ciclo che itera per ogni pokemon
+    pokemonsDataWeaknesses.forEach((pkmn) => {
+        // Object.keys trasforma un oggetto in array associativo (es: object.prop -> object[prop])
+        Object.keys(pkmn).forEach((key) => {
+            // Se la mossa del pokemon è superefficace
+            if(pkmn[key] > 1)
+                // Aumento di 1 o di 2 l'efficacia del team contro un certo tipo
+                teamWeaknesses[key] += pkmn[key]/2
+            // Se non è molto efficace
+            else if(pkmn[key] < 1){
+                if(pkmn[key] != 0)
+                    // Diminuisco di 1 o di 2 l'efficacia del team contro un certo tipo
+                    teamWeaknesses[key] -= (1/(pkmn[key]))/2
+            }
+        })
+    })
+}
+
+/*
+ESEMPIO: 
+debolezze:
+-fuoco x2
+-fuoco x4
+-acqua
+
+resistenze:
+-fuoco x0.5
+-acqua x0.25
+-acqua
+
+complesso:
+-fuoco+fuoco-fuoco (1+1-1 = 1)
+-acqua-acqua-acqua (+1-1-1 = -1)
+*/

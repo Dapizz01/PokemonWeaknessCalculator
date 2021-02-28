@@ -11,7 +11,6 @@ let pokemons = Array()
 let pokemonTextRaw = Array() // Contiene tutti i pokemon così come sono inseriti nel textarea
 
 function getAllPokemonsTextRaw(){
-    // Prendo tutti i pokemon nel textarea, dividendoli per ogni \n\n e poi li metto nell'array allPokemons
     let allPokemons = document.getElementById("pokeTeamText").value.split("\n\n");
     allPokemons.forEach(element => {
         pokemonTextRaw.push(element)
