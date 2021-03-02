@@ -13,7 +13,8 @@ let pokemonTextRaw = Array() // Contiene tutti i pokemon così come sono inserit
 function getAllPokemonsTextRaw(){
     let allPokemons = document.getElementById("pokeTeamText").value.split("\n\n");
     allPokemons.forEach(element => {
-        pokemonTextRaw.push(element)
+        if(element != "")
+            pokemonTextRaw.push(element)
     });
 }
 

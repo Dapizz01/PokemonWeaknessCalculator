@@ -65,12 +65,12 @@ var teamMovesEffectiveness = {
 var teamMoves = Array()
 
 // Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa
-function getPokemonsWeaknesses(){
+async function getPokemonsWeaknesses(){
     getAllPokemonsTextRaw()
     parseRawPokemonInfo()
     fetchInfoAndCalculateWeaknesses()
-    getMovesEffectiveness()
-    buildAllCards()
+    await getMovesEffectiveness()
+    await buildAllCards()// Parte quando non dovrebbe (javascript è asincrono)
 }
 
 // Funzione che costruisce le cards dei pokemon
@@ -287,7 +287,6 @@ function calculateTeamWeakness(){
 async function getMovesEffectiveness(){
     let moves = getAllMoves()
     for(let i = 0; i < moves.length; i++){
-        console.log(i)
         //let formattedRequest = moves[i].toLowerCase().replace(" ", "-");
         let fetchResult = await fetch("https://pokeapi.co/api/v2/move/" + moves[i])
         let jsonResult = await fetchResult.json()
@@ -298,7 +297,7 @@ async function getMovesEffectiveness(){
             type: jsonResult.type.name 
         })
     }
-    console.log(teamMoves)
+
     for(let i = 0; i < moves.length; i++){
         if(teamMoves[i].power != null){
             let fResult = await fetch("https://pokeapi.co/api/v2/type/" + teamMoves[i].type)
