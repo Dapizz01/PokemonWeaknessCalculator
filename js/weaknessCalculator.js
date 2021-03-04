@@ -64,13 +64,13 @@ var teamMovesEffectiveness = {
 */
 var teamMoves = Array()
 
-// Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa
+// Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa e delle mosse in attacco
 async function getPokemonsWeaknesses(){
     getAllPokemonsTextRaw()
     parseRawPokemonInfo()
     fetchInfoAndCalculateWeaknesses()
     await getMovesEffectiveness()
-    await buildAllCards()// Parte quando non dovrebbe (javascript è asincrono)
+    await buildAllCards()
 }
 
 // Funzione che costruisce le cards dei pokemon
@@ -251,16 +251,20 @@ function updateExceptionWeaknesses(pkmn){
                     break;
             }
 
-            switch(element.item){
-                case "Air Baloon":
-                    updateWeaknesses(pkmnName, "ground", 0)
-                    break;
-                case "Ring Target":
-                    // Da fare la funzione che permette di togliere tutti i 0x
-                    break;
-                default:
-                    break;
+            // Se il pokemon ha un item
+            if(element.item != null){
+                switch(element.item){
+                    case "Air Baloon":
+                        updateWeaknesses(pkmnName, "ground", 0)
+                        break;
+                    case "Ring Target":
+                        // Da fare la funzione che permette di togliere tutti i 0x
+                        break;
+                    default:
+                        break;
+                }
             }
+            
         }
     })
 }
@@ -285,12 +289,15 @@ function calculateTeamWeakness(){
 }
 
 async function getMovesEffectiveness(){
+    // moves contiene i nomi di tutte le mosse di tutti i pokemon
     let moves = getAllMoves()
+    // Ciclo che itera per ogni mossa
     for(let i = 0; i < moves.length; i++){
-        //let formattedRequest = moves[i].toLowerCase().replace(" ", "-");
+        // Fetch dei dati della mossa da pokeAPI
         let fetchResult = await fetch("https://pokeapi.co/api/v2/move/" + moves[i])
         let jsonResult = await fetchResult.json()
 
+        // Per ogni mossa memorizzo nome, potenza e tipo
         teamMoves.push({
             name: jsonResult.name,
             power: jsonResult.power,
@@ -298,14 +305,19 @@ async function getMovesEffectiveness(){
         })
     }
 
+    // Per ogni mossa
     for(let i = 0; i < moves.length; i++){
+        // Se la potenza della mossa non è 0 (quindi fa danno)
         if(teamMoves[i].power != null){
+            // Fetch dei dati del tipo della mossa
             let fResult = await fetch("https://pokeapi.co/api/v2/type/" + teamMoves[i].type)
             let jResult = await fResult.json()
 
+            // Aumento l'efficacia del team nei confronti di un certi tipi
             jResult.damage_relations.double_damage_to.forEach((element) => {
                 teamMovesEffectiveness[element.name]++;
             })
+            // Diminuisco l'efficacia del team nei confronti di un certi tipi 
             jResult.damage_relations.half_damage_to.forEach((element) => {
                 teamMovesEffectiveness[element.name]--;
             })
@@ -316,6 +328,7 @@ async function getMovesEffectiveness(){
 
 function getAllMoves(){
     let result = Array()
+    // Per ogni pokemon memorizzo nell'array result il nome della mossa, tutto in minuscolo e sostituendo gli spazi con trattini (come vuole pokeAPI)
     pokemons.forEach((element) => {
         result.push(element.move1.toLowerCase().replace(" ", "-"))
         result.push(element.move2.toLowerCase().replace(" ", "-"))

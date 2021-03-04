@@ -34,15 +34,31 @@ function parseRawPokemonInfo(){
 }
 
 function getPokemonNameRaw(pokemonRaw){
-    // Prendo il nome del pokemon: prima riga, primo valore separato dallo spazio
-    let name = pokemonRaw.split(" ")[0]
-    
-    // Eccezioni per pokemon che si distinguono per il genere
-    if(name == "Indeedee"){
-        if(pokemonRaw.split(" ")[1] == "(M)")
-            name = "Indeedee-male"
-        else
-            name = "Indeedee-female"
+    let name
+
+    // Se il pokemon ha un item
+    if(pokemonRaw.includes("@")){
+        // Prendo il nome del pokemon: prima riga, primo valore separato dallo spazio
+        name = pokemonRaw.split(" @")[0]
+        // Eccezioni per pokemon che si distinguono per il genere (Indeedee)
+        if(name == "Indeedee"){
+            if(pokemonRaw.split(" ")[1] == "(M)")
+                name = "Indeedee-male"
+            else
+                name = "Indeedee-female"
+        }
+    }
+    // Se il pokemon non ha nessun item
+    else{
+        // Prendo la prima riga togliendo i 2 spazi finali
+        name = pokemonRaw.split("  ")[0]
+        // Eccezione per Indeedee
+        if(name == "Indeedee"){
+            if(pokemonRaw.split(" ")[1] == "(M)")
+                name = "Indeedee-male"
+            else
+                name = "Indeedee-female"
+        }
     }
     
     return name;
@@ -51,7 +67,10 @@ function getPokemonNameRaw(pokemonRaw){
 function getPokemonItemRaw(pokemonRaw){
     // Prima riga, prendo l'oggetto del pokemon che è la sottostringa dopo la @, escluso il primo spazio
     let item = pokemonRaw.split("\n")[0].split("@")[1]
-    return item.substring(1, item.length-2)
+    if(item == null)
+        return item
+    else
+        return item.substring(1, item.length-2)
 }
 
 function getPokemonAbilityRaw(pokemonRaw){

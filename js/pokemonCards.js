@@ -1,10 +1,24 @@
 function buildNewCard(pkmn, apiData, pkmnWeaknesses){
+    // name è il nome del pokemon
     let name = pkmn.name
+    // ability è l'abilità del pokemon
     let ability = pkmn.ability
+    // item è l'item del pokemon
     let item = pkmn.item
+    // typeImages contiene i path delle immagini dei tipi usati dai pokemon
     let typeImages = Array()
-    let pkmnImage = apiData.sprites.other.dream_world.front_default
+    // pkmnImage è lo sprite usato nelle cards
+    let pkmnImage;
     let types = Array()
+
+    // Se non c'è lo sprite migliore (quello dream world)
+    if(apiData.sprites.other.dream_world.front_default == null){
+        // Prendi quello di default (dei giochi originali)
+        pkmnImage = apiData.sprites.front_default
+    }
+    // Altrimenti prendi quello dream world
+    else
+        pkmnImage = apiData.sprites.other.dream_world.front_default
 
     // Lettura dei tipi dentro apiData
     apiData.types.forEach(element => {
@@ -38,29 +52,32 @@ function buildNewCard(pkmn, apiData, pkmnWeaknesses){
         }
     })
 
+    // Sort delle weaknesses
     weaknesses.sort((a, b) => {
         return b.value - a.value
     })
+    // Sort delle resistences
     resistences.sort((a, b) => {
         return b.value - a.value
     })
 
+    // Costruzione della carta con html
     let card = '' 
     card += '<div class="pokemonCard">'
-    card += '<p>' + name + '</p>'
+    card += '<p class="pkmnName">' + name + '</p>'
     card += '<img class="pkmnImage" src="' + pkmnImage + '"><br>'
     card += '<div class="types"> Types: '
     typeImages.forEach((element) => {
         card += '<img class="typeIcon" src="' + element + '">'
     })
-    card += '</div><br>'
+    card += '</div>'
     card += '<p> Ability: ' + ability + ' / Item: ' + item + ' </p>'
-    card += '<div class="weaknesses">'
+    card += '<div class="weaknesses">Weak to:<br>'
     weaknesses.forEach((element) => {
         card += '<p><img src="' + element.imgLink + '" class="typeIcon"> x' + element.value + ' </p>'
     })
     card += '</div>'
-    card += '<div class="resistences">'
+    card += '<div class="resistences">Resistent to:<br>'
     resistences.forEach((element) => {
         card += '<p><img src="' + element.imgLink + '" class="typeIcon"> x' + element.value + ' </p>'
     })
