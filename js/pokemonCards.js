@@ -11,14 +11,18 @@ function buildNewCard(pkmn, apiData, pkmnWeaknesses){
     let pkmnImage;
     let types = Array()
 
-    // Se non c'è lo sprite migliore (quello dream world)
-    if(apiData.sprites.other.dream_world.front_default == null){
-        // Prendi quello di default (dei giochi originali)
-        pkmnImage = apiData.sprites.front_default
-    }
-    // Altrimenti prendi quello dream world
-    else
+    // Serie di if-else per prendere lo sprite migliore (ordine di precendenza: 1. Dream World, 2. official-artwork, 3. front_default)
+    // Prendi sprite dream world
+    console.log(apiData)
+    if(apiData.sprites.other.dream_world.front_default != null){
         pkmnImage = apiData.sprites.other.dream_world.front_default
+    }
+    // Prendi sprite official-artwork
+    else if(apiData.sprites.other["official-artwork"].front_default != null)
+        pkmnImage = apiData.sprites.other["official-artwork"].front_default
+    // Prendi sprite front_default
+    else
+        pkmnImage = apiData.sprites.front_default
 
     // Lettura dei tipi dentro apiData
     apiData.types.forEach(element => {

@@ -40,13 +40,6 @@ function getPokemonNameRaw(pokemonRaw){
     if(pokemonRaw.includes("@")){
         // Prendo il nome del pokemon: prima riga, primo valore separato dallo spazio
         name = pokemonRaw.split(" @")[0]
-        // Eccezioni per pokemon che si distinguono per il genere (Indeedee)
-        /* if(name == "Indeedee"){
-            if(pokemonRaw.split(" ")[1] == "(M)")
-                name = "Indeedee-male"
-            else
-                name = "Indeedee-female"
-        } */
         name = checkPokemonNameExceptions(name)
     }
     // Se il pokemon non ha nessun item
@@ -88,16 +81,18 @@ function getPokemonMovesRaw(pokemonRaw, index){
 }
 
 function checkPokemonNameExceptions(pkmnName){
-    console.log(pkmnName)
+    
+    if(pkmnName != "Indeedee (M)" && pkmnName != "Indeedee (F)")
+        pkmnName = deletePokemonGender(pkmnName)
+
     switch(pkmnName){
         // INDEEDEE
-        case "Indeedee":
-            if(pkmnName == "Indeedee"){
-                if(pokemonRaw.split(" ")[1] == "(M)")
-                    pkmnName = "Indeedee-male"
-                else
-                    pkmnName = "Indeedee-female"
-            }
+        case "Indeedee (M)":
+        case "Indeedee (F)":
+            if(pkmnName.split(" ")[1] == "(M)")
+                pkmnName = "Indeedee-male"
+            else
+                pkmnName = "Indeedee-female"
             break;
         // CALYREX
         case "Calyrex-Ice":
@@ -300,8 +295,28 @@ function checkPokemonNameExceptions(pkmnName){
         case "Zarude-dada":
             pkmnName = "Zarude"
             break;
+        // I VARI TAPU: hanno lo spazio che separa i due nomi, vanno uniti con il trattino
+        case "Tapu Koko":
+            pkmnName = "Tapu-Koko"
+            break;
+        case "Tapu Fini":
+            pkmnName = "Tapu-Fini"
+            break;
+        case "Tapu Lele":
+            pkmnName = "Tapu-Lele"
+            break;
+        case "Tapu Bulu":
+            pkmnName = "Tapu-Bulu"
+            break;
     }
-    return pkmnName
+    return deletePokemonGender(pkmnName)
+}
+
+function deletePokemonGender(pkmnName){
+    if(pkmnName.includes("(M)") || pkmnName.includes("(F)"))
+        return pkmnName.substring(0, pkmnName.length-4)
+    else
+        return pkmnName
 }
 
 /* ESEMPIO:

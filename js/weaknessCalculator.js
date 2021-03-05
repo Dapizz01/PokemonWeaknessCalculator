@@ -330,10 +330,10 @@ function getAllMoves(){
     let result = Array()
     // Per ogni pokemon memorizzo nell'array result il nome della mossa, tutto in minuscolo e sostituendo gli spazi con trattini (come vuole pokeAPI)
     pokemons.forEach((element) => {
-        result.push(element.move1.toLowerCase().replace(" ", "-"))
-        result.push(element.move2.toLowerCase().replace(" ", "-"))
-        result.push(element.move3.toLowerCase().replace(" ", "-"))
-        result.push(element.move4.toLowerCase().replace(" ", "-"))
+        result.push(element.move1.toLowerCase().replaceAll(" ", "-"))
+        result.push(element.move2.toLowerCase().replaceAll(" ", "-"))
+        result.push(element.move3.toLowerCase().replaceAll(" ", "-"))
+        result.push(element.move4.toLowerCase().replaceAll(" ", "-"))
     })
     return result
 }
