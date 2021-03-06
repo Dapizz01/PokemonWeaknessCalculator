@@ -13,45 +13,45 @@ var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
 var flag = false
 
 var teamWeaknesses = {
-    normal: 1,
-    fighting: 1,
-    flying: 1,
-    poison: 1,
-    ground: 1,
-    rock: 1,
-    bug: 1,
-    ghost: 1,
-    steel: 1,
-    fire: 1,
-    water: 1,
-    grass: 1,
-    electric: 1,
-    psychic: 1,
-    ice: 1,
-    dragon: 1,
-    dark: 1,
-    fairy: 1
+    bug: 0,
+    dark: 0,
+    dragon: 0,
+    electric: 0,
+    fairy: 0,
+    fighting: 0,
+    fire: 0,
+    flying: 0,
+    ghost: 0,
+    grass: 0,
+    ground: 0,
+    ice: 0,
+    normal: 0,
+    poison: 0,
+    psychic: 0,
+    rock: 0,
+    steel: 0,
+    water: 0
 }
 
 var teamMovesEffectiveness = {
-    normal: 0,
-    fighting: 0,
-    flying: 0,
-    poison: 0,
-    ground: 0,
-    rock: 0,
     bug: 0,
-    ghost: 0,
-    steel: 0,
-    fire: 0,
-    water: 0,
-    grass: 0,
-    electric: 0,
-    psychic: 0,
-    ice: 0,
-    dragon: 0,
     dark: 0,
-    fairy: 0
+    dragon: 0,
+    electric: 0,
+    fairy: 0,
+    fighting: 0,
+    fire: 0,
+    flying: 0,
+    ghost: 0,
+    grass: 0,
+    ground: 0,
+    ice: 0,
+    normal: 0,
+    poison: 0,
+    psychic: 0,
+    rock: 0,
+    steel: 0,
+    water: 0
 }
 
 // Struttura teamMoves:
@@ -95,7 +95,7 @@ async function fetchInfoAndCalculateWeaknesses(){
         // Aggiungo un nuovo elemento in addPokemonWeakness con il nome di quel pokemon
         addPokemonWeakness(jsonResult.name)
         // Trovo i tipi non efficaci / superefficaci chiamando evaluatePokemonWeakness()
-        evaluatePokemonWeaknesses(jsonResult)
+        await evaluatePokemonWeaknesses(jsonResult)
     }
     // Calcolo di tutte le debolezze del team
     calculateTeamWeakness()
@@ -272,18 +272,23 @@ function updateExceptionWeaknesses(pkmn){
 function calculateTeamWeakness(){
     // Ciclo che itera per ogni pokemon
     pokemonsDataWeaknesses.forEach((pkmn) => {
+        console.log(pkmn.name)
         // Object.keys trasforma un oggetto in array associativo (es: object.prop -> object[prop])
         Object.keys(pkmn).forEach((key) => {
-            // Se la mossa del pokemon è superefficace
-            if(pkmn[key] > 1)
-                // Aumento di 1 o di 2 l'efficacia del team contro un certo tipo
-                teamWeaknesses[key] += pkmn[key]/2
-            // Se non è molto efficace
-            else if(pkmn[key] < 1){
-                if(pkmn[key] != 0)
-                    // Diminuisco di 1 o di 2 l'efficacia del team contro un certo tipo
-                    teamWeaknesses[key] -= (1/(pkmn[key]))/2
+            if(key != "name"){
+                // Se la mossa del pokemon è superefficace
+                if(pkmn[key] > 1)
+                    // Aumento di 1 o di 2 l'efficacia del team contro un certo tipo
+                    teamWeaknesses[key] += pkmn[key]/2
+                // Se non è molto efficace
+                else if(pkmn[key] < 1){
+                    if(pkmn[key] != 0)
+                        // Diminuisco di 1 o di 2 l'efficacia del team contro un certo tipo
+                        teamWeaknesses[key] -= (1/(pkmn[key]))/2
+                }
+                console.log(key + " - " + teamWeaknesses[key] + " - " + pkmn[key])
             }
+            
         })
     })
 }
