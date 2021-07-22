@@ -57,16 +57,18 @@ function getPokemonItemRaw(pokemonRaw){
     let item = pokemonRaw.split("\n")[0].split("@")[1]
     if(item == null)
         return item
-    else
-        return item.substring(1, item.length-2)
+    else{
+        item = deleteLastSpaces(item)
+        return item.substring(1, item.length)
+    }
 }
 
 function getPokemonAbilityRaw(pokemonRaw){
     // Seconda riga, prendo il nome dopo lo spazio
     console.log(pokemonRaw)
     let ability = pokemonRaw.split("\n")[1].split(": ")[1]
-    console.log(ability)
-    return ability.substring(0, ability.length-2)
+    ability = deleteLastSpaces(ability)
+    return ability.substring(0, ability.length)
 }
 
 function getPokemonMovesRaw(pokemonRaw, index){
@@ -76,7 +78,8 @@ function getPokemonMovesRaw(pokemonRaw, index){
     let moves = Array()
     rows.forEach((element) => {
         if(element.substring(0, 1) == "-"){
-            moves.push(element.substring(2, element.length-2))
+            element = deleteLastSpaces(element)
+            moves.push(element.substring(2, element.length))    // 2 per non prendere il "-"
         }
     })
     return moves[index-1]
@@ -333,6 +336,12 @@ function deleteUselessPokemonName(pkmnName){
         pkmnName = pkmnName.substring(pkmnName.indexOf("(")+1, pkmnName.indexOf(")"))
     }
     return pkmnName;
+}
+
+function deleteLastSpaces(element){
+    while( element[element.length-1] == " " )
+        element = element.substring(0, element.length-1)
+    return element
 }
 /* ESEMPIO:
 Palkia @ Life Orb  

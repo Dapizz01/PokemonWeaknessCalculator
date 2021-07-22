@@ -72,7 +72,8 @@ async function getPokemonsWeaknesses(){
     fetchInfoAndCalculateWeaknesses()
     await getMovesEffectiveness()
     await buildAllCards()
-    drawGraph()
+    drawGraphTypes()
+    drawGraphMoves()
 }
 
 // Resetta le variabili al loro valore di default e resetta la pagina html
@@ -93,7 +94,8 @@ function resetVariables(){
 
     // Reset pagina html
     document.getElementById("pokemonCards").innerHTML = "";
-    myChart.destroy();
+    chartTypes.destroy();
+    chartMoves.destroy();
 }
 
 // Funzione che costruisce le cards dei pokemon
@@ -295,7 +297,6 @@ function updateExceptionWeaknesses(pkmn){
 function calculateTeamWeakness(){
     // Ciclo che itera per ogni pokemon
     pokemonsDataWeaknesses.forEach((pkmn) => {
-        console.log(pkmn.name)
         // Object.keys trasforma un oggetto in array associativo (es: object.prop -> object[prop])
         Object.keys(pkmn).forEach((key) => {
             if(key != "name"){
@@ -309,7 +310,7 @@ function calculateTeamWeakness(){
                         // Diminuisco di 1 o di 2 l'efficacia del team contro un certo tipo
                         teamWeaknesses[key] -= (1/(pkmn[key]))/2
                 }
-                console.log(key + " - " + teamWeaknesses[key] + " - " + pkmn[key])
+                // console.log(key + " - " + teamWeaknesses[key] + " - " + pkmn[key])
             }
             
         })
