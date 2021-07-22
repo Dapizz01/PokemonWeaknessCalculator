@@ -10,9 +10,8 @@ var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
     }
 */
 
-var flag = false
 
-var teamWeaknesses = {
+var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
     bug: 0,
     dark: 0,
     dragon: 0,
@@ -33,7 +32,7 @@ var teamWeaknesses = {
     water: 0
 }
 
-var teamMovesEffectiveness = {
+var teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
     bug: 0,
     dark: 0,
     dragon: 0,
@@ -66,11 +65,35 @@ var teamMoves = Array()
 
 // Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa e delle mosse in attacco
 async function getPokemonsWeaknesses(){
+    if(pokemons[0] != undefined)
+        resetVariables()
     getAllPokemonsTextRaw()
     parseRawPokemonInfo()
     fetchInfoAndCalculateWeaknesses()
     await getMovesEffectiveness()
     await buildAllCards()
+    drawGraph()
+}
+
+// Resetta le variabili al loro valore di default e resetta la pagina html
+function resetVariables(){
+    // Reset variabili
+    pokemonsData = Array();
+    pokemonsDataWeaknesses = Array();
+    pokemons = Array();
+    pokemonTextRaw = Array();
+    pokemonsTextRaw = Array();
+    teamMoves = Array();
+    teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
+        bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
+    };
+    teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
+        bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
+    };
+
+    // Reset pagina html
+    document.getElementById("pokemonCards").innerHTML = "";
+    myChart.destroy();
 }
 
 // Funzione che costruisce le cards dei pokemon
@@ -328,7 +351,6 @@ async function getMovesEffectiveness(){
             })
         }
     }
-    flag = true
 }
 
 function getAllMoves(){

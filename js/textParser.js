@@ -63,7 +63,9 @@ function getPokemonItemRaw(pokemonRaw){
 
 function getPokemonAbilityRaw(pokemonRaw){
     // Seconda riga, prendo il nome dopo lo spazio
+    console.log(pokemonRaw)
     let ability = pokemonRaw.split("\n")[1].split(": ")[1]
+    console.log(ability)
     return ability.substring(0, ability.length-2)
 }
 
@@ -82,17 +84,24 @@ function getPokemonMovesRaw(pokemonRaw, index){
 
 function checkPokemonNameExceptions(pkmnName){
     
-    if(pkmnName != "Indeedee (M)" && pkmnName != "Indeedee (F)")
-        pkmnName = deletePokemonGender(pkmnName)
+    pkmnName = deletePokemonGender(pkmnName)
+    pkmnName = deleteUselessPokemonName(pkmnName)
 
     switch(pkmnName){
         // INDEEDEE
-        case "Indeedee (M)":
+        /*case "Indeedee (M)":
         case "Indeedee (F)":
             if(pkmnName.split(" ")[1] == "(M)")
                 pkmnName = "Indeedee-male"
             else
                 pkmnName = "Indeedee-female"
+            break;*/
+        // INDEEDEE (fixato)
+        case "Indeedee-F":
+            pkmnName = "Indeedee-female";
+            break;
+        case "Indeedee":
+            pkmnName = "Indeedee-male";
             break;
         // CALYREX
         case "Calyrex-Ice":
@@ -309,7 +318,7 @@ function checkPokemonNameExceptions(pkmnName){
             pkmnName = "Tapu-Bulu"
             break;
     }
-    return deletePokemonGender(pkmnName)
+    return pkmnName
 }
 
 function deletePokemonGender(pkmnName){
@@ -319,6 +328,12 @@ function deletePokemonGender(pkmnName){
         return pkmnName
 }
 
+function deleteUselessPokemonName(pkmnName){
+    if(pkmnName.includes("(")){
+        pkmnName = pkmnName.substring(pkmnName.indexOf("(")+1, pkmnName.indexOf(")"))
+    }
+    return pkmnName;
+}
 /* ESEMPIO:
 Palkia @ Life Orb  
 Ability: Telepathy  
