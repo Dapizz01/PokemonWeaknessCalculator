@@ -44,3 +44,24 @@
 	left: 0px;
 	background-color: coral;
 }
+
+#pokeTeamText{
+    width: 203px;
+    height: 407px;
+    margin: auto;
+    display: flex;
+    min-width: 400px;
+    resize: none;
+    font-family: arial;
+    border: none;
+}
+
+#checkTeam{
+    display: flex;
+    margin: auto;
+    font-family: arial;
+    font-size: 25;
+    border-radius: 10%;
+    border-color: red;
+    background-color: lightpink;
+}

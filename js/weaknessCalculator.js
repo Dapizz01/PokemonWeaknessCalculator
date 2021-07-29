@@ -54,6 +54,27 @@ var teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi 
     water: 0
 }
 
+var teamImmunities = {  // Contiene il numero di pokemon immuni per tipo
+    bug: 0,
+    dark: 0,
+    dragon: 0,
+    electric: 0,
+    fairy: 0,
+    fighting: 0,
+    fire: 0,
+    flying: 0,
+    ghost: 0,
+    grass: 0,
+    ground: 0,
+    ice: 0,
+    normal: 0,
+    poison: 0,
+    psychic: 0,
+    rock: 0,
+    steel: 0,
+    water: 0
+}
+
 // Struttura teamMoves:
 /*
     teamMoves = {
@@ -92,6 +113,9 @@ function resetVariables(){
         bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
     };
     teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
+        bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
+    };
+    teamImmunities = {  // Contiene il numero di immunità difensive
         bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
     };
 
@@ -308,6 +332,8 @@ function calculateTeamWeakness(){
                     if(pkmn[key] != 0)
                         // Diminuisco di 1 o di 2 l'efficacia del team contro un certo tipo
                         teamWeaknesses[key] -= (1/(pkmn[key]))/2
+                    else    // Calcolo delle immunità
+                        teamImmunities[key]++;
                 }
                 // console.log(key + " - " + teamWeaknesses[key] + " - " + pkmn[key])
             }
@@ -362,8 +388,6 @@ function getAllMoves(){
     })
     return result
 }
-
-
 
 /*
 ESEMPIO: 
