@@ -13,7 +13,6 @@ function buildNewCard(pkmn, apiData, pkmnWeaknesses){
 
     // Serie di if-else per prendere lo sprite migliore (ordine di precendenza: 1. Dream World, 2. official-artwork, 3. front_default)
     // Prendi sprite dream world
-    console.log(apiData)
     if(apiData.sprites.other.dream_world.front_default != null){
         pkmnImage = apiData.sprites.other.dream_world.front_default
     }

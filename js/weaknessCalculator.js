@@ -10,6 +10,7 @@ var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
     }
 */
 
+var pokedex = new Pokedex.Pokedex()
 
 var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
     bug: 0,
@@ -65,6 +66,7 @@ var teamMoves = Array()
 
 // Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa e delle mosse in attacco
 async function getPokemonsWeaknesses(){
+	document.getElementById("loadingScreen").className = "loadingVisible"
     if(pokemons[0] != undefined)
         resetVariables()
     getAllPokemonsTextRaw()
@@ -74,6 +76,7 @@ async function getPokemonsWeaknesses(){
     await buildAllCards()
     drawGraphTypes()
     drawGraphMoves()
+	document.getElementById("loadingScreen").className = "loadingInvisible"
 }
 
 // Resetta le variabili al loro valore di default e resetta la pagina html
@@ -111,16 +114,14 @@ async function fetchInfoAndCalculateWeaknesses(){
         // pkmn -> Pokemon corrente
         let pkmn = pokemons[i]
         // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono)
-        let fetchResult = await fetch("https://pokeapi.co/api/v2/pokemon/" + pkmn.name.toLowerCase())
-        // Trasformazione in json del risultato
-        let jsonResult = await fetchResult.json()
+        let fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase())
 
         // Aggiungo il json del pokemon in pokemonsData
-        pokemonsData.push(jsonResult)
+        pokemonsData.push(fetchResult)
         // Aggiungo un nuovo elemento in addPokemonWeakness con il nome di quel pokemon
-        addPokemonWeakness(jsonResult.name)
+        addPokemonWeakness(fetchResult.name)
         // Trovo i tipi non efficaci / superefficaci chiamando evaluatePokemonWeakness()
-        await evaluatePokemonWeaknesses(jsonResult)
+        await evaluatePokemonWeaknesses(fetchResult)
     }
     // Calcolo di tutte le debolezze del team
     calculateTeamWeakness()
@@ -140,14 +141,12 @@ async function evaluatePokemonWeaknesses(pkmn){
         // currentType è il tipo corrente
         let currentType = types[i]
         // Fetch della pagina di pokeAPI di un certo tipo, qua uso slice altrimenti dà problemi pokeAPI se c'è "/" alla fine dell'URL
-        let result = await fetch(currentType.type.url.slice(0, -1))
-        // Trasformo la promise di fetch in json
-        let json = await result.json()
+        let result = await pokedex.getTypeByName(currentType.type.name)
 
         // Aggiorno le debolezze del pokemon, modificando i tipi superefficaci, inefficaci, poco efficaci
-        updateWeaknesses(pkmn.name, json.damage_relations.double_damage_from, 2)
-        updateWeaknesses(pkmn.name, json.damage_relations.no_damage_from, 0)
-        updateWeaknesses(pkmn.name, json.damage_relations.half_damage_from, 0.5)
+        updateWeaknesses(result.name, result.damage_relations.double_damage_from, 2)
+        updateWeaknesses(result.name, result.damage_relations.no_damage_from, 0)
+        updateWeaknesses(result.name, result.damage_relations.half_damage_from, 0.5)
     }
 
     // Aggiorno i tipi superefficaci / poco efficaci anche in base al tipo di abilità o di item che un certo pokemon possiede
@@ -181,21 +180,21 @@ async function evaluatePokemonWeaknesses(pkmn){
 }*/
 
 function updateWeaknesses(name, weaknesses, value){
-    // Cerca un certo pokemon con il nome "name"
-    pokemonsDataWeaknesses.forEach((pkmn) => {
-        if(pkmn.name == name){
-            if(Array.isArray(weaknesses)){
-                // Per ogni debolezza passata in "weaknesses"
-                weaknesses.forEach((type) => {
-                    // Aggiorno il valore di pokemonsDataWeaknesses con il tipo "type.name" moltiplicandolo per "value"
-                    pkmn[type.name] *= value
-                })
-            }
-            else{
-                pkmn[weaknesses] *= value
-            }
-        }
-    })
+    // Prendo l'ultimo elemento dell'array (dato che aggiorniamo sempre solo l'ultimo elemento)
+	 let pkmn = pokemonsDataWeaknesses[pokemonsDataWeaknesses.length-1]
+		if(Array.isArray(weaknesses)){
+			 // Per ogni debolezza passata in "weaknesses"
+			 for(let type in weaknesses){ // type ora contiene un numero, da 0 a n, con n lunghezza di weaknesses
+				  // Aggiorno il valore di pokemonsDataWeaknesses con il tipo "type.name" moltiplicandolo per "value"
+				 // typeName contiene l'elemento di weaknesses con etichetta type
+				  let typeName = weaknesses[type]
+				 // typeName.name indica il nome dell'elemento typeName
+				  pkmn[typeName.name] *= value
+			 }
+		}
+		else{
+			 pkmn[weaknesses] *= value
+		}
     return 0;
 }
 
@@ -323,14 +322,13 @@ async function getMovesEffectiveness(){
     // Ciclo che itera per ogni mossa
     for(let i = 0; i < moves.length; i++){
         // Fetch dei dati della mossa da pokeAPI
-        let fetchResult = await fetch("https://pokeapi.co/api/v2/move/" + moves[i])
-        let jsonResult = await fetchResult.json()
+        let fetchResult = await pokedex.getMoveByName(moves[i])
 
         // Per ogni mossa memorizzo nome, potenza e tipo
         teamMoves.push({
-            name: jsonResult.name,
-            power: jsonResult.power,
-            type: jsonResult.type.name 
+            name: fetchResult.name,
+            power: fetchResult.power,
+            type: fetchResult.type.name 
         })
     }
 
@@ -339,15 +337,14 @@ async function getMovesEffectiveness(){
         // Se la potenza della mossa non è 0 (quindi fa danno)
         if(teamMoves[i].power != null){
             // Fetch dei dati del tipo della mossa
-            let fResult = await fetch("https://pokeapi.co/api/v2/type/" + teamMoves[i].type)
-            let jResult = await fResult.json()
+            let fetchResult = await pokedex.getTypeByName(teamMoves[i].type)
 
             // Aumento l'efficacia del team nei confronti di un certi tipi
-            jResult.damage_relations.double_damage_to.forEach((element) => {
+            fetchResult.damage_relations.double_damage_to.forEach((element) => {
                 teamMovesEffectiveness[element.name]++;
             })
             // Diminuisco l'efficacia del team nei confronti di un certi tipi 
-            jResult.damage_relations.half_damage_to.forEach((element) => {
+            fetchResult.damage_relations.half_damage_to.forEach((element) => {
                 teamMovesEffectiveness[element.name]--;
             })
         }

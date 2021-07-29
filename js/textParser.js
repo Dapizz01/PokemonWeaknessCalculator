@@ -91,14 +91,6 @@ function checkPokemonNameExceptions(pkmnName){
     pkmnName = deleteUselessPokemonName(pkmnName)
 
     switch(pkmnName){
-        // INDEEDEE
-        /*case "Indeedee (M)":
-        case "Indeedee (F)":
-            if(pkmnName.split(" ")[1] == "(M)")
-                pkmnName = "Indeedee-male"
-            else
-                pkmnName = "Indeedee-female"
-            break;*/
         // INDEEDEE (fixato)
         case "Indeedee-F":
             pkmnName = "Indeedee-female";
