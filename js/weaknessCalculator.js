@@ -1,5 +1,4 @@
-var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
-var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
+
 /*
     pokemonDataWeaknesses: {
         name: "",
@@ -10,30 +9,155 @@ var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
     }
 */
 
+/*teamMovesEffectiveness =
+[{
+    ice:
+    {
+        "totalEffectiveness" : 2,
+        "effectiveMoves": [
+            {
+                "moveName": "flamethrower"
+                "pokemonOwner": "charizard"
+            },
+            ...
+        ],
+        "notEffectiveMoves": [
+            ...
+        ],
+        "immunities": [
+            .....
+        ]
+    }
+}]*/
+
+var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
+var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
 var pokedex = new Pokedex.Pokedex()
 
-var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
-    bug: 0,
-    dark: 0,
-    dragon: 0,
-    electric: 0,
-    fairy: 0,
-    fighting: 0,
-    fire: 0,
-    flying: 0,
-    ghost: 0,
-    grass: 0,
-    ground: 0,
-    ice: 0,
-    normal: 0,
-    poison: 0,
-    psychic: 0,
-    rock: 0,
-    steel: 0,
-    water: 0
+let pokemonMoveScheme = {
+    moveName: "",
+    pokemonOwner: ""
+}
+
+let typeEffectiveness = {
+    totalEffectiveness: 0,
+    effectiveMoves: [],
+    notEffectiveMoves: [],
+    immunities: []
 }
 
 var teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
+    bug: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    dark: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    dragon: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    electric: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    fairy: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    fighting: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    fire: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    flying: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    ghost: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    grass: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    ground: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    ice: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    normal: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    poison: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    psychic: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    rock: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    steel: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    },
+    water: {
+        totalEffectiveness: 0,
+        effectiveMoves: [],
+        notEffectiveMoves: [],
+        immunities: []
+    }
+}
+
+var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
     bug: 0,
     dark: 0,
     dragon: 0,
@@ -75,9 +199,11 @@ var teamImmunities = {  // Contiene il numero di pokemon immuni per tipo
     water: 0
 }
 
+
 // Struttura teamMoves:
 /*
     teamMoves = {
+        "pokemonName": ...,
         "name": ...,
         "power": ...,
         "type": ...,
@@ -343,49 +469,65 @@ function calculateTeamWeakness(){
 }
 
 async function getMovesEffectiveness(){
-    // moves contiene i nomi di tutte le mosse di tutti i pokemon
-    let moves = getAllMoves()
-    // Ciclo che itera per ogni mossa
-    for(let i = 0; i < moves.length; i++){
-        // Fetch dei dati della mossa da pokeAPI
-        let fetchResult = await pokedex.getMoveByName(moves[i])
-
-        // Per ogni mossa memorizzo nome, potenza e tipo
-        teamMoves.push({
-            name: fetchResult.name,
-            power: fetchResult.power,
-            type: fetchResult.type.name 
+    let pokemonsList = Array()
+    pokemons.forEach((element) => {
+        let pokemonMoves = getAllMoves(element)
+        pokemonsList.push({
+            pokemonName: element.name,
+            moves: pokemonMoves
         })
+    })
+    // Ciclo che itera per ogni pokemon
+    for(let i = 0; i < pokemonsList.length; i++){
+        // Fetch dei dati della mossa da pokeAPI
+        for(let j = 0; j < pokemonsList[i].moves.length; j++){
+            let fetchResult = await pokedex.getMoveByName(pokemonsList[i].moves[j])
+
+            // Per ogni mossa memorizzo nome, potenza e tipo
+            teamMoves.push({
+                pokemonName: pokemonsList[i].pokemonName,
+                name: fetchResult.name,
+                power: fetchResult.power,
+                type: fetchResult.type.name 
+            })
+        }
     }
 
-    // Per ogni mossa
-    for(let i = 0; i < moves.length; i++){
+    // Per ogni pokemon
+    for(let i = 0; i < teamMoves.length; i++){
         // Se la potenza della mossa non è 0 (quindi fa danno)
         if(teamMoves[i].power != null){
             // Fetch dei dati del tipo della mossa
             let fetchResult = await pokedex.getTypeByName(teamMoves[i].type)
+            let tempScheme = {
+                moveName: teamMoves[i].name,
+                pokemonOwner: teamMoves[i].pokemonName
+            }
 
             // Aumento l'efficacia del team nei confronti di un certi tipi
             fetchResult.damage_relations.double_damage_to.forEach((element) => {
-                teamMovesEffectiveness[element.name]++;
+                teamMovesEffectiveness[element.name].totalEffectiveness++;
+                teamMovesEffectiveness[element.name].effectiveMoves.push(tempScheme) // NON VA!!!
             })
             // Diminuisco l'efficacia del team nei confronti di un certi tipi 
             fetchResult.damage_relations.half_damage_to.forEach((element) => {
-                teamMovesEffectiveness[element.name]--;
+                teamMovesEffectiveness[element.name].totalEffectiveness--;
+                teamMovesEffectiveness[element.name].notEffectiveMoves.push(tempScheme)
             })
-        }
+            fetchResult.damage_relations.no_damage_to.forEach((element) => {
+                teamMovesEffectiveness[element.name].immunities.push(tempScheme)
+            })
+          }
     }
 }
 
-function getAllMoves(){
+function getAllMoves(singlePokemon){
     let result = Array()
     // Per ogni pokemon memorizzo nell'array result il nome della mossa, tutto in minuscolo e sostituendo gli spazi con trattini (come vuole pokeAPI)
-    pokemons.forEach((element) => {
-        result.push(element.move1.toLowerCase().replaceAll(" ", "-"))
-        result.push(element.move2.toLowerCase().replaceAll(" ", "-"))
-        result.push(element.move3.toLowerCase().replaceAll(" ", "-"))
-        result.push(element.move4.toLowerCase().replaceAll(" ", "-"))
-    })
+    result.push(singlePokemon.move1.toLowerCase().replaceAll(" ", "-"))
+    result.push(singlePokemon.move2.toLowerCase().replaceAll(" ", "-"))
+    result.push(singlePokemon.move3.toLowerCase().replaceAll(" ", "-"))
+    result.push(singlePokemon.move4.toLowerCase().replaceAll(" ", "-"))
     return result
 }
 
