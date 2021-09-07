@@ -1,12 +1,20 @@
+*{
+    font-family: 'Roboto', sans-serif;
+    color: black;
+    background-color: white;
+}
+
 #pokemonCards{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+    align-items: baseline;
 }
 
 .pokemonCard{
+    /* background-color: black; */
     width: 250px;
-    border: 10px solid black;
+    border: 7px solid black;
     border-radius: 50px;
     margin: 10px 0px;
     padding: 20px 10px;
@@ -32,36 +40,89 @@
 
 .loadingInvisible{
 	display: none;
+    /* animation: loadingOut 0.5s; */
 }
 
 .loadingVisible{
-	display: block;
 	position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 	z-index: 999;
 	width: 100%;
 	height: 100%;
 	top: 0px;
-	left: 0px;
-	background-color: coral;
+    left: 0px;
+    /* animation: loadingIn 0.5s; */
 }
 
 #pokeTeamText{
-    width: 203px;
-    height: 407px;
+    width: 40%;
+    height: 400px;
     margin: auto;
     display: flex;
     min-width: 400px;
+    max-width: 600px;
     resize: none;
-    font-family: arial;
-    border: none;
+    font: arial;
+    border: 5px solid black;
 }
 
 #checkTeam{
     display: flex;
     margin: auto;
+    margin-top: 10px;
     font-family: arial;
     font-size: 25;
     border-radius: 10%;
-    border-color: red;
-    background-color: lightpink;
+    border-color: black;
+    background-color: red;
 }
+
+#loadingPokeball{
+    width: 15%;
+}
+
+.graphContainer2{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.graphContainer{
+    margin: 50px 0px;
+    width: 70%;
+    min-width: 500px;
+}
+
+#explanation{
+    margin: 30px;
+    font-size: 18px;
+}
+
+#title{
+    background-color: red;
+    font-size: 43;
+    font-weight: bold;
+    padding: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/*@keyframes loadingIn {
+    from{
+        left: -100%;
+    }
+    to{
+        left: 0%;
+    }
+}
+
+@keyframes loadingOut {
+    from{
+        left: 0%;
+    }
+    to{
+        left: -100%;
+    }
+}*/

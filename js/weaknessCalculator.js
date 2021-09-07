@@ -218,7 +218,7 @@ async function getPokemonsWeaknesses(){
         resetVariables()
     getAllPokemonsTextRaw()
     parseRawPokemonInfo()
-    fetchInfoAndCalculateWeaknesses()
+    await fetchInfoAndCalculateWeaknesses()
     await getMovesEffectiveness()
     await buildAllCards()
     drawGraphTypes()
@@ -239,7 +239,114 @@ function resetVariables(){
         bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
     };
     teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
-        bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
+        bug: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        dark: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        dragon: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        electric: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        fairy: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        fighting: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        fire: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        flying: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        ghost: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        grass: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        ground: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        ice: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        normal: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        poison: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        psychic: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        rock: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        steel: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        },
+        water: {
+            totalEffectiveness: 0,
+            effectiveMoves: [],
+            notEffectiveMoves: [],
+            immunities: []
+        }
     };
     teamImmunities = {  // Contiene il numero di immunità difensive
         bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
@@ -507,7 +614,10 @@ async function getMovesEffectiveness(){
             // Aumento l'efficacia del team nei confronti di un certi tipi
             fetchResult.damage_relations.double_damage_to.forEach((element) => {
                 teamMovesEffectiveness[element.name].totalEffectiveness++;
-                teamMovesEffectiveness[element.name].effectiveMoves.push(tempScheme) // NON VA!!!
+                teamMovesEffectiveness[element.name].effectiveMoves.push({
+                    moveName: teamMoves[i].name,
+                    pokemonOwner: teamMoves[i].pokemonName
+                }) // NON VA!!!
             })
             // Diminuisco l'efficacia del team nei confronti di un certi tipi 
             fetchResult.damage_relations.half_damage_to.forEach((element) => {

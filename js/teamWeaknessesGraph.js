@@ -63,14 +63,20 @@ function drawGraphTypes(){
                 data: teamWeaknesses,
                 backgroundColor: typesBackgroundColor,
                 borderColor: typesBorderColor,
-                borderWidth: 4
+                borderWidth: 4,
+                minBarLength: 3,
+                categoryPercentage: 0.8,
+                barPercentage: 1
             },
             {
                 label: 'Pokemon Types Immunity',
                 data: teamImmunities,
-                backgroundColor: "black",
+                backgroundColor: typesBorderColor,
                 borderColor: typesBackgroundColor,
-                borderWidth: 4
+                borderWidth: 4,
+                minBarLength: 3,
+                categoryPercentage: 0.8,
+                barPercentage: 1,
             }]
         },
         options: {
@@ -78,6 +84,13 @@ function drawGraphTypes(){
                 tooltip: {
                     callbacks: {
                         afterLabel: tooltipWeakness
+                    }
+                },
+                title: {
+                    display: true,
+                    text: "Pokemon Types Weaknesses",
+                    font: {
+                        size: 25
                     }
                 }
             }
@@ -101,21 +114,35 @@ function drawGraphMoves(){
                 data: totalMoves,
                 backgroundColor: typesBackgroundColor,
                 borderColor: typesBorderColor,
-                borderWidth: 4
+                borderWidth: 4,
+                minBarLength: 3,
+                categoryPercentage: 0.8,
+                barPercentage: 1
             }, {
                 label: 'Pokemon Moves Immunities', 
                 data: immunityMoves,
-                backgroundColor: typesBackgroundColor,
-                borderColor: typesBorderColor,
-                borderWidth: 4
+                backgroundColor: typesBorderColor,
+                borderColor: typesBackgroundColor,
+                borderWidth: 4,
+                minBarLength: 3,
+                categoryPercentage: 0.8,
+                barPercentage: 1,
             }]
-        }, options: {
+        }, 
+        options: {
             plugins: {
                 tooltip: {
                     callbacks: {
                         afterLabel: tooltipMoves
                     }
-                }
+                },
+                title: {
+                    display: true,
+                    text: "Pokemon Moves Type Effectiveness",
+                    font: {
+                        size: 25
+                    }
+                },
             }
         }
     })

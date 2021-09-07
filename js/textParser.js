@@ -34,7 +34,7 @@ function parseRawPokemonInfo(){
 }
 
 function getPokemonNameRaw(pokemonRaw){
-    let name
+    let name;
 
     // Se il pokemon ha un item
     if(pokemonRaw.includes("@")){
@@ -44,8 +44,8 @@ function getPokemonNameRaw(pokemonRaw){
     }
     // Se il pokemon non ha nessun item
     else{
-        // Prendo la prima riga togliendo i 2 spazi finali
-        name = pokemonRaw.split("  ")[0]
+        // Prendo la prima riga togliendo gli spazi finali
+        name = deleteLastSpaces(pokemonRaw)
         name = checkPokemonNameExceptions(name)
     }
     
@@ -71,13 +71,14 @@ function getPokemonAbilityRaw(pokemonRaw){
     return ability.substring(0, ability.length)
 }
 
+// Restituisce la mossa n° "index"
 function getPokemonMovesRaw(pokemonRaw, index){
     // Cerco tutte le mosse di un certo pokemon e le memorizzo in moves, dopo ritorno quella richiesta da "index"
     // index va da 1 a 4
     let rows = pokemonRaw.split("\n")
     let moves = Array()
     rows.forEach((element) => {
-        if(element.substring(0, 1) == "-"){
+        if(element.substring(0, 1) == "-"){ // Se in quella riga c'è un - davanti, allora è una mossa
             element = deleteLastSpaces(element)
             moves.push(element.substring(2, element.length))    // 2 per non prendere il "-"
         }
@@ -403,3 +404,70 @@ Serious Nature
 */
 
 // ANCORA DA FARE COME ECCEZIONI: SILVALLY, ARCEUS, VIVILLON e ALCREAMIE
+
+/*
+Rayquaza @ White Herb  
+Ability: Air Lock  
+Level: 50  
+EVs: 36 HP / 236 Atk / 4 Def / 12 SpD / 220 Spe  
+Jolly Nature  
+- Dragon Dance  
+- Dragon Ascent  
+- Protect  
+- Waterfall  
+
+Heatran @ Shuca Berry  
+Ability: Flash Fire  
+Level: 50  
+EVs: 116 HP / 12 Def / 252 SpA / 100 SpD / 28 Spe  
+Modest Nature  
+IVs: 0 Atk  
+- Earth Power  
+- Flash Cannon  
+- Burning Jealousy  
+- Protect  
+
+Jellicent (M) @ Rindo Berry  
+Ability: Water Absorb  
+Level: 50  
+EVs: 252 HP / 60 Def / 196 SpD  
+Sassy Nature  
+IVs: 0 Atk / 0 Spe  
+- Trick Room  
+- Water Spout  
+- Shadow Ball  
+- Strength Sap  
+
+Indeedee-F (F) @ Red Card  
+Ability: Psychic Surge  
+Level: 50  
+EVs: 236 HP / 116 Def / 156 SpA  
+Relaxed Nature  
+IVs: 0 Atk / 0 Spe  
+- Follow Me  
+- Expanding Force  
+- Protect  
+- Mystical Fire  
+
+Regieleki @ Focus Sash  
+Ability: Transistor  
+Level: 50  
+EVs: 236 SpA / 20 SpD / 252 Spe  
+Timid Nature  
+IVs: 0 Atk  
+- Electroweb  
+- Thunderbolt  
+- Volt Switch  
+- Protect  
+
+Landorus-Therian (M) @ Choice Scarf  
+Ability: Intimidate  
+Level: 50  
+EVs: 124 HP / 4 Def / 252 SpA / 60 SpD / 68 Spe  
+Modest Nature  
+- U-turn  
+- Rock Slide  
+- Earth Power  
+- Sludge Bomb  
+
+*/
