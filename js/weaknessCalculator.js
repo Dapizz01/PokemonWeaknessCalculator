@@ -33,6 +33,7 @@
 var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
 var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
 var pokedex = new Pokedex.Pokedex()
+var errorMessage = ""
 
 let pokemonMoveScheme = {
     moveName: "",
@@ -216,13 +217,19 @@ async function getPokemonsWeaknesses(){
 	document.getElementById("loadingScreen").className = "loadingVisible"
     if(pokemons[0] != undefined)
         resetVariables()
-    getAllPokemonsTextRaw()
-    parseRawPokemonInfo()
-    await fetchInfoAndCalculateWeaknesses()
-    await getMovesEffectiveness()
-    await buildAllCards()
-    drawGraphTypes()
-    drawGraphMoves()
+    try{
+        getAllPokemonsTextRaw()
+        parseRawPokemonInfo()
+        await fetchInfoAndCalculateWeaknesses()
+        await getMovesEffectiveness()
+        await buildAllCards()
+        drawGraphTypes()
+        drawGraphMoves()
+    }
+    catch(error){
+        alert(error)
+        resetVariables()
+    }
 	document.getElementById("loadingScreen").className = "loadingInvisible"
 }
 
@@ -351,11 +358,17 @@ function resetVariables(){
     teamImmunities = {  // Contiene il numero di immunità difensive
         bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
     };
-
+    correctParse = true
+    parsingMessage = ""
+    correctFetch = true
+    fetchMessage = ""
     // Reset pagina html
     document.getElementById("pokemonCards").innerHTML = "";
-    chartTypes.destroy();
-    chartMoves.destroy();
+    // != string perchè, dopo il destroy, chart.js reistanzia i vecchi chart come stringhe
+    if(chartTypes != undefined && chartTypes != false)
+        chartTypes.destroy();
+    if(chartMoves != undefined && chartMoves != false)
+        chartMoves.destroy();
 }
 
 // Funzione che costruisce le cards dei pokemon
@@ -370,9 +383,10 @@ async function fetchInfoAndCalculateWeaknesses(){
     for(let i = 0; i < pokemons.length; i++){
         // pkmn -> Pokemon corrente
         let pkmn = pokemons[i]
-        // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono)
-        let fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase())
-
+        // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono), se c'è un errore, questo viene preso dal catch e viene mandato un errore custom
+        let fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase()).catch(reason => {
+            throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
+        })
         // Aggiungo il json del pokemon in pokemonsData
         pokemonsData.push(fetchResult)
         // Aggiungo un nuovo elemento in addPokemonWeakness con il nome di quel pokemon
@@ -397,7 +411,7 @@ async function evaluatePokemonWeaknesses(pkmn){
     for(let i = 0; i < types.length; i++){
         // currentType è il tipo corrente
         let currentType = types[i]
-        // Fetch della pagina di pokeAPI di un certo tipo, qua uso slice altrimenti dà problemi pokeAPI se c'è "/" alla fine dell'URL
+        // Fetch della pagina di pokeAPI di un certo tipo
         let result = await pokedex.getTypeByName(currentType.type.name)
 
         // Aggiorno le debolezze del pokemon, modificando i tipi superefficaci, inefficaci, poco efficaci
@@ -588,7 +602,9 @@ async function getMovesEffectiveness(){
     for(let i = 0; i < pokemonsList.length; i++){
         // Fetch dei dati della mossa da pokeAPI
         for(let j = 0; j < pokemonsList[i].moves.length; j++){
-            let fetchResult = await pokedex.getMoveByName(pokemonsList[i].moves[j])
+            let fetchResult = await pokedex.getMoveByName(pokemonsList[i].moves[j]).catch(reason => {
+                throw "Error! Move " + pokemonsList[i].moves[j] + " not found\n"
+            })
 
             // Per ogni mossa memorizzo nome, potenza e tipo
             teamMoves.push({
@@ -634,10 +650,10 @@ async function getMovesEffectiveness(){
 function getAllMoves(singlePokemon){
     let result = Array()
     // Per ogni pokemon memorizzo nell'array result il nome della mossa, tutto in minuscolo e sostituendo gli spazi con trattini (come vuole pokeAPI)
-    result.push(singlePokemon.move1.toLowerCase().replaceAll(" ", "-"))
-    result.push(singlePokemon.move2.toLowerCase().replaceAll(" ", "-"))
-    result.push(singlePokemon.move3.toLowerCase().replaceAll(" ", "-"))
-    result.push(singlePokemon.move4.toLowerCase().replaceAll(" ", "-"))
+    result.push(singlePokemon.move1.toLowerCase().replace(/ /g, "-"))
+    result.push(singlePokemon.move2.toLowerCase().replace(/ /g, "-"))
+    result.push(singlePokemon.move3.toLowerCase().replace(/ /g, "-"))
+    result.push(singlePokemon.move4.toLowerCase().replace(/ /g, "-"))
     return result
 }
 

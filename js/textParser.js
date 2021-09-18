@@ -20,20 +20,20 @@ function getAllPokemonsTextRaw(){
 
 function parseRawPokemonInfo(){
     // Per ogni pokemon memorizzato in pokemonTextRaw, trovo ogni valore importante e lo memorizzo come oggetto in pokemons
-    pokemonTextRaw.forEach(element => {
+    pokemonTextRaw.forEach((element, index) => {
         pokemons.push({
-            "name": getPokemonNameRaw(element),
-            "item": getPokemonItemRaw(element),
-            "ability": getPokemonAbilityRaw(element),
-            "move1": getPokemonMovesRaw(element, 1),
-            "move2": getPokemonMovesRaw(element, 2),
-            "move3": getPokemonMovesRaw(element, 3),
-            "move4": getPokemonMovesRaw(element, 4)
+            "name": getPokemonNameRaw(element, index),
+            "item": getPokemonItemRaw(element, index),
+            "ability": getPokemonAbilityRaw(element, index),
+            "move1": getPokemonMovesRaw(element, 1, index),
+            "move2": getPokemonMovesRaw(element, 2, index),
+            "move3": getPokemonMovesRaw(element, 3, index),
+            "move4": getPokemonMovesRaw(element, 4, index)
         })
     });
 }
 
-function getPokemonNameRaw(pokemonRaw){
+function getPokemonNameRaw(pokemonRaw, pkmnIndex){
     let name;
 
     // Se il pokemon ha un item
@@ -49,10 +49,14 @@ function getPokemonNameRaw(pokemonRaw){
         name = checkPokemonNameExceptions(name)
     }
     
+    if(name == ""){
+        throw "Empty name of the " + pkmnIndex+1 + " pokemon\n"
+    }
+        
     return name;
 }
 
-function getPokemonItemRaw(pokemonRaw){
+function getPokemonItemRaw(pokemonRaw, pkmnIndex){
     // Prima riga, prendo l'oggetto del pokemon che è la sottostringa dopo la @, escluso il primo spazio
     let item = pokemonRaw.split("\n")[0].split("@")[1]
     if(item == null)
@@ -63,26 +67,31 @@ function getPokemonItemRaw(pokemonRaw){
     }
 }
 
-function getPokemonAbilityRaw(pokemonRaw){
+function getPokemonAbilityRaw(pokemonRaw, pkmnIndex){
     // Seconda riga, prendo il nome dopo lo spazio
-    console.log(pokemonRaw)
     let ability = pokemonRaw.split("\n")[1].split(": ")[1]
     ability = deleteLastSpaces(ability)
+    if(ability.substring(0, ability.length) == ""){
+        throw "Empty ability of the " + pkmnIndex+1 + " pokemon\n"
+    }
     return ability.substring(0, ability.length)
 }
 
 // Restituisce la mossa n° "index"
-function getPokemonMovesRaw(pokemonRaw, index){
+function getPokemonMovesRaw(pokemonRaw, index, pkmnIndex){
     // Cerco tutte le mosse di un certo pokemon e le memorizzo in moves, dopo ritorno quella richiesta da "index"
     // index va da 1 a 4
     let rows = pokemonRaw.split("\n")
     let moves = Array()
-    rows.forEach((element) => {
-        if(element.substring(0, 1) == "-"){ // Se in quella riga c'è un - davanti, allora è una mossa
-            element = deleteLastSpaces(element)
-            moves.push(element.substring(2, element.length))    // 2 per non prendere il "-"
+    for(let i = 0; i < rows.length; i++){
+        if(rows[i].substring(0, 1) == "-"){ // Se in quella riga c'è un - davanti, allora è una mossa
+            rows[i] = deleteLastSpaces(rows[i])
+            moves.push(rows[i].substring(2, rows[i].length))    // 2 per non prendere il "-"
         }
-    })
+    }
+    if(moves[index-1] == ""){
+        throw "Empty move n°" + index + " of the " + pkmnIndex+1 + " pokemon\n"
+    }
     return moves[index-1]
 }
 
