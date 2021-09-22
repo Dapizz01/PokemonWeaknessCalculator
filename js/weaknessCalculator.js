@@ -1,217 +1,3 @@
-
-/*
-    pokemonDataWeaknesses: {
-        name: "",
-        "tipo1": 2 // superefficace
-        "tipo2": 1 // neutro
-        "tipo3": 0.5 // non efficace
-        "tipo4": 0 // nessun effetto
-    }
-*/
-
-/*teamMovesEffectiveness =
-[{
-    ice:
-    {
-        "totalEffectiveness" : 2,
-        "effectiveMoves": [
-            {
-                "moveName": "flamethrower"
-                "pokemonOwner": "charizard"
-            },
-            ...
-        ],
-        "notEffectiveMoves": [
-            ...
-        ],
-        "immunities": [
-            .....
-        ]
-    }
-}]*/
-
-var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
-var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
-var pokedex = new Pokedex.Pokedex()
-var errorMessage = ""
-
-let pokemonMoveScheme = {
-    moveName: "",
-    pokemonOwner: ""
-}
-
-let typeEffectiveness = {
-    totalEffectiveness: 0,
-    effectiveMoves: [],
-    notEffectiveMoves: [],
-    immunities: []
-}
-
-var teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
-    bug: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    dark: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    dragon: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    electric: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    fairy: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    fighting: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    fire: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    flying: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    ghost: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    grass: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    ground: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    ice: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    normal: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    poison: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    psychic: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    rock: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    steel: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    },
-    water: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
-    }
-}
-
-var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
-    bug: 0,
-    dark: 0,
-    dragon: 0,
-    electric: 0,
-    fairy: 0,
-    fighting: 0,
-    fire: 0,
-    flying: 0,
-    ghost: 0,
-    grass: 0,
-    ground: 0,
-    ice: 0,
-    normal: 0,
-    poison: 0,
-    psychic: 0,
-    rock: 0,
-    steel: 0,
-    water: 0
-}
-
-var teamImmunities = {  // Contiene il numero di pokemon immuni per tipo
-    bug: 0,
-    dark: 0,
-    dragon: 0,
-    electric: 0,
-    fairy: 0,
-    fighting: 0,
-    fire: 0,
-    flying: 0,
-    ghost: 0,
-    grass: 0,
-    ground: 0,
-    ice: 0,
-    normal: 0,
-    poison: 0,
-    psychic: 0,
-    rock: 0,
-    steel: 0,
-    water: 0
-}
-
-
-// Struttura teamMoves:
-/*
-    teamMoves = {
-        "pokemonName": ...,
-        "name": ...,
-        "power": ...,
-        "type": ...,
-    }
-*/
-var teamMoves = Array()
-
 // Funzione principale, da qua si fa il parsing dell'input, prendo i dati da pokeAPI e trova tutte le debolezze della difesa e delle mosse in attacco
 async function getPokemonsWeaknesses(){
 	document.getElementById("loadingScreen").className = "loadingVisible"
@@ -233,143 +19,6 @@ async function getPokemonsWeaknesses(){
 	document.getElementById("loadingScreen").className = "loadingInvisible"
 }
 
-// Resetta le variabili al loro valore di default e resetta la pagina html
-function resetVariables(){
-    // Reset variabili
-    pokemonsData = Array();
-    pokemonsDataWeaknesses = Array();
-    pokemons = Array();
-    pokemonTextRaw = Array();
-    pokemonsTextRaw = Array();
-    teamMoves = Array();
-    teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
-        bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
-    };
-    teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
-        bug: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        dark: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        dragon: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        electric: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        fairy: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        fighting: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        fire: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        flying: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        ghost: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        grass: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        ground: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        ice: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        normal: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        poison: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        psychic: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        rock: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        steel: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        },
-        water: {
-            totalEffectiveness: 0,
-            effectiveMoves: [],
-            notEffectiveMoves: [],
-            immunities: []
-        }
-    };
-    teamImmunities = {  // Contiene il numero di immunità difensive
-        bug: 0, dark: 0, dragon: 0, electric: 0, fairy: 0, fighting: 0, fire: 0, flying: 0, ghost: 0, grass: 0, ground: 0, ice: 0, normal: 0, poison: 0, psychic: 0, rock: 0, steel: 0, water: 0
-    };
-    correctParse = true
-    parsingMessage = ""
-    correctFetch = true
-    fetchMessage = ""
-    // Reset pagina html
-    document.getElementById("pokemonCards").innerHTML = "";
-    // != string perchè, dopo il destroy, chart.js reistanzia i vecchi chart come stringhe
-    if(chartTypes != undefined && chartTypes != false)
-        chartTypes.destroy();
-    if(chartMoves != undefined && chartMoves != false)
-        chartMoves.destroy();
-}
 
 // Funzione che costruisce le cards dei pokemon
 async function buildAllCards(){
@@ -423,32 +72,6 @@ async function evaluatePokemonWeaknesses(pkmn){
     // Aggiorno i tipi superefficaci / poco efficaci anche in base al tipo di abilità o di item che un certo pokemon possiede
     updateExceptionWeaknesses(pkmn)
 }
-
-/*function evaluateAllPokemonsWeaknesses(){
-    // Analizzo tutte le debolezze e l'efficacia della tipi di tutti i pokemon, SOLO IN DIFESA, NON IN ATTACCO
-    pokemonsData.forEach((element) => {
-        let types = Array() // Insieme dei tipi di un pokemon
-        
-        // Prendo tutti i tipi di un certo pokemon
-        for(let i = 0; i < element.types.length; i++){
-            types.push(element.types[i])
-        }
-
-        // Per ogni tipo
-        types.forEach((currentType) => {
-            // Prendo da pokeAPI tutti le relazioni del tipo considerato con gli altri tipi e aggiorno di conseguenza pokemonDataWeaknesses attraverso updateWeaknesses(...)
-            fetch(currentType.type.url).then((data) => {
-                data.json().then((result) => {
-                    let a = updateWeaknesses(element.name, result.damage_relations.double_damage_from, 2)
-                    a = updateWeaknesses(element.name, result.damage_relations.no_damage_from, 0)
-                    a = updateWeaknesses(element.name, result.damage_relations.half_damage_from, 0.5)
-                })
-            })
-            console.log(currentType)
-        })
-    })
-    // updateExceptionWeaknesses()
-}*/
 
 function updateWeaknesses(name, weaknesses, value){
     // Prendo l'ultimo elemento dell'array (dato che aggiorniamo sempre solo l'ultimo elemento)
@@ -582,9 +205,7 @@ function calculateTeamWeakness(){
                     else    // Calcolo delle immunità
                         teamImmunities[key]++;
                 }
-                // console.log(key + " - " + teamWeaknesses[key] + " - " + pkmn[key])
             }
-            
         })
     })
 }
@@ -633,7 +254,7 @@ async function getMovesEffectiveness(){
                 teamMovesEffectiveness[element.name].effectiveMoves.push({
                     moveName: teamMoves[i].name,
                     pokemonOwner: teamMoves[i].pokemonName
-                }) // NON VA!!!
+                })
             })
             // Diminuisco l'efficacia del team nei confronti di un certi tipi 
             fetchResult.damage_relations.half_damage_to.forEach((element) => {
@@ -661,15 +282,14 @@ function getAllMoves(singlePokemon){
 ESEMPIO: 
 debolezze:
 -fuoco x2
--fuoco x4
--acqua
+-acqua x4
+-fuoco x2
 
 resistenze:
 -fuoco x0.5
 -acqua x0.25
--acqua
 
 complesso:
--fuoco+fuoco-fuoco (1+1-1 = 1)
--acqua-acqua-acqua (+1-1-1 = -1)
+-fuoco: 1+1-1 = 1
+-acqua-acqua-acqua 2-2 = 0
 */

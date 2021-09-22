@@ -1,7 +1,7 @@
 *{
     font-family: 'Roboto', sans-serif;
-    color: black;
-    background-color: white;
+    color: #ebdbb2;
+    background-color: #282828;
 }
 
 #pokemonCards{
@@ -14,7 +14,7 @@
 .pokemonCard{
     /* background-color: black; */
     width: 250px;
-    border: 7px solid black;
+    border: 7px solid #ebdbb2;
     border-radius: 50px;
     margin: 10px 0px;
     padding: 20px 10px;
@@ -65,7 +65,7 @@
     max-width: 600px;
     resize: none;
     font: arial;
-    border: 5px solid black;
+    border: 5px solid #ebdbb2;
 }
 
 #checkTeam{
@@ -76,7 +76,7 @@
     font-size: 25;
     border-radius: 10%;
     border-color: black;
-    background-color: red;
+    background-color: #cc241d;
 }
 
 #loadingPokeball{
@@ -101,28 +101,10 @@
 }
 
 #title{
-    background-color: red;
+    background-color: #cc241d;
     font-size: 43;
     font-weight: bold;
     padding: 15px;
     text-align: center;
     margin-bottom: 20px;
 }
-
-/*@keyframes loadingIn {
-    from{
-        left: -100%;
-    }
-    to{
-        left: 0%;
-    }
-}
-
-@keyframes loadingOut {
-    from{
-        left: 0%;
-    }
-    to{
-        left: -100%;
-    }
-}*/
