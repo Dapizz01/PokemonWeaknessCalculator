@@ -61,7 +61,7 @@
     height: 400px;
     margin: auto;
     display: flex;
-    min-width: 400px;
+    /* min-width: 400px; */
     max-width: 600px;
     resize: none;
     font: arial;
