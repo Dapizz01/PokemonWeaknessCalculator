@@ -28,9 +28,14 @@ function parseRawPokemonInfo(){
             "move1": getPokemonMovesRaw(element, 1, index),
             "move2": getPokemonMovesRaw(element, 2, index),
             "move3": getPokemonMovesRaw(element, 3, index),
-            "move4": getPokemonMovesRaw(element, 4, index)
+            "move4": getPokemonMovesRaw(element, 4, index),
+            "alternativeForm": false
         })
     });
+
+    pokemons.forEach((element) => {
+        checkAlternativeForm(element)
+    })
 }
 
 function getPokemonNameRaw(pokemonRaw, pkmnIndex){
@@ -40,13 +45,15 @@ function getPokemonNameRaw(pokemonRaw, pkmnIndex){
     if(pokemonRaw.includes("@")){
         // Prendo il nome del pokemon: prima riga, primo valore separato dallo spazio
         name = pokemonRaw.split(" @")[0]
-        name = checkPokemonNameExceptions(name)
+        name = deletePokemonGender(name)
+        name = deleteUselessPokemonName(name)
     }
     // Se il pokemon non ha nessun item
     else{
         // Prendo la prima riga togliendo gli spazi finali
         name = deleteLastSpaces(pokemonRaw)
-        name = checkPokemonNameExceptions(name)
+        name = deletePokemonGender(name)
+        name = deleteUselessPokemonName(name)
     }
     
     if(name == ""){
@@ -95,24 +102,21 @@ function getPokemonMovesRaw(pokemonRaw, index, pkmnIndex){
     return moves[index-1]
 }
 
-function checkPokemonNameExceptions(pkmnName){
-    
-    pkmnName = deletePokemonGender(pkmnName)
-    pkmnName = deleteUselessPokemonName(pkmnName)
-
-    switch(pkmnName){
+function checkAlternativeForm(pkmn){
+    switch(pkmn.name){
         // INDEEDEE (fixato)
         case "Indeedee-F":
-            pkmnName = "Indeedee-female";
+            pkmn.name = "Indeedee-female";
             break;
         case "Indeedee":
-            pkmnName = "Indeedee-male";
+            pkmn.name = "Indeedee-male";
             break;
         // CALYREX
         case "Calyrex-Ice":
-            pkmnName = "calyrex-ice-rider"
+            pkmn.name = "calyrex-ice-rider"
+            break;
         case "Calyrex-Shadow":
-            pkmnName = "calyrex-shadow-rider"
+            pkmn.name = "calyrex-shadow-rider"
             break;
         // Varianti di PIKACHU con il cappello delle regioni
         case "Pikachu-Original":
@@ -121,59 +125,70 @@ function checkPokemonNameExceptions(pkmnName){
         case "Pikachu-Unova":
         case "Pikachu-Kalos":
         case "Pikachu-Partner":
-            pkmnName += "-cap"
+            pkmn.name += "-cap"
             break;
         // CASO PARTICOLARE: Kyogre con Blue Orb diventa "Primal-Kyogre", stesso con Groudon
-
+        case "Kyogre":
+            if(pkmn.item == "Blue Orb"){
+                pkmn.name = "Kyogre-primal"
+                alternativeForm = true
+            }
+            break;
+        case "Groudon":
+            if(pkmn.item == "Red Orb"){
+                pkmn.name = "Groudon-primal"
+                alternativeForm = true
+            }
+            break;
         // WORMADAM: "wormadam" base equivale a "wormadam-plant"
         case "Wormadam":
-            pkmnName = "Wormadam-plant"
+            pkmn.name = "Wormadam-plant"
             break;
         // GIRATINA: la forma base di giratina su showdown è "giratina", su pokeAPI "giratina-altered"
         case "Giratina":
-            pkmnName = "Giratina-altered"
+            pkmn.name = "Giratina-altered"
             break;
         // SHAYMIN: la forma base di shaymin su showdown è "shaymin", su pokeAPI "shaymin-land"
         case "Shaymin":
-            pkmnName = "Shaymin-land"
+            pkmn.name = "Shaymin-land"
             break;
         // DARMANITAN: a differenza di showdown, il nome di darmanitan su pokeAPI richiede anche "-standard" nel nome
         case "Darmanitan":
-            pkmnName = "Darmanitan-standard"
+            pkmn.name = "Darmanitan-standard"
             break;
         case "Darmanitan-Galar":
-            pkmnName = "Darmanitan-standard-galar"
+            pkmn.name = "Darmanitan-standard-galar"
             break;
         // SAWSBUCK: su pokeAPI non ci sono tutte le varianti, invece su showdown si, quindi tolgo il nome della variante della stagione (tanto è inutile)
         case "Sawsbuck-Summer":
         case "Sawsbuck-Winter":
         case "Sawsbuck-Autumn":
-            pkmnName = "Sawsbuck"
+            pkmn.name = "Sawsbuck"
             break;
         // TORNADUS, LANDORUS e THUNDURUS: la forma base su pokeAPI è "incarnate", "therian" rimane la stessa
         case "Tornadus":
-            pkmnName = "Tornadus-incarnate"
+            pkmn.name = "Tornadus-incarnate"
             break;
         case "Landorus":
-            pkmnName = "Landorus-incarnate"
+            pkmn.name = "Landorus-incarnate"
             break;
         case "Thundurus":
-            pkmnName = "Thundurus-incarnate"
+            pkmn.name = "Thundurus-incarnate"
             break;
         // KELDEO: la forma base di Keldeo su showdown è "Keldeo", su pokeAPI "Keldeo-ordinary"
         case "Keldeo":
-            pkmnName = "Keldeo-ordinary"
+            pkmn.name = "Keldeo-ordinary"
             break;
         // MELOETTA: la forma base di Meloetta su showdown è "Meloetta", su pokeAPI "Meloetta-aria"
         case "Meloetta":
-            pkmnName = "Meloetta-aria"
+            pkmn.name = "Meloetta-aria"
             break;
         // GENESECT: su showdown se Genesect ha un disco cambia nome, su pokeAPI è sempre "Genesect"
         case "Genesect-Chill":
         case "Genesect-Burn":
         case "Genesect-Douse":
         case "Genesect-Shock":
-            pkmnName = "Genesect"
+            pkmn.name = "Genesect"
             break;
         // VIVILLION: sono da fare, ma ce ne sono 30, un parto
         // FLABEBE, FLOETTE, FLORGES: hanno 5 colori, quello di default per showdown è il rosso
@@ -181,17 +196,17 @@ function checkPokemonNameExceptions(pkmnName){
         case "Flabébé-Orange":
         case "Flabébé-White":
         case "Flabébé-Yellow":
-            pkmnName = "Flabébé"
+            pkmn.name = "Flabébé"
         case "Floette-Blue":
         case "Floette-Orange":
         case "Floette-White":
         case "Floette-Yellow":
-            pkmnName = "Floette"
+            pkmn.name = "Floette"
         case "Florges-Blue":
         case "Florges-Orange":
         case "Florges-White":
         case "Florges-Yellow":
-            pkmnName = "Florges"
+            pkmn.name = "Florges"
         // FURFROU: ha 10 varianti, ma pokeAPI accetta solo quella standard (quella bianca)
         case "Furfrou-Dandy":
         case "Furfrou-Debutante":
@@ -202,128 +217,162 @@ function checkPokemonNameExceptions(pkmnName){
         case "Furfrou-Matron":
         case "Furfrou-Pharaoh":
         case "Furfrou-Star":
-            pkmnName = "Furfrou"
+            pkmn.name = "Furfrou"
             break;
         // AEGISLASH: su pokeAPI la versione standard di Aegislash è chiamata "Aegislash-shield", su showdown "aegislash"
         case "Aegislash":
-            pkmnName = "Aegislash-shield"
+            pkmn.name = "Aegislash-shield"
             break;
         // PUMPKABOO - GOURGEIST: su showdown la versione grandezza normale viene chiamata "Pumpkaboo", mentre su pokeAPI "Pumpkaboo-average", le altre versioni sono compatibili
         case "Pumpkaboo":
-            pkmnName = "Pumpkaboo-average"
+            pkmn.name = "Pumpkaboo-average"
             break;
         case "Gourgeist":
-            pkmnName = "Gourgeist-average"
+            pkmn.name = "Gourgeist-average"
         // XERNEAS: su pokeAPI non c'è Xerneas-Neutral, invece su showdown si
         case "Xerneas-Neutral":
-            pkmnName = "Xerneas"
+            pkmn.name = "Xerneas"
             break;
         // ZYGARDE: su showdown Zygarde 10% è chiamato "Zygarde-10%" su pokeAPI "Zygarde-10"
         case "Zygarde-10%":
-            pkmnName = "Zygarde-10"
+            pkmn.name = "Zygarde-10"
             break;
         // ORICORIO: su showdown la variante base e pa'u sono chiamate "Oricorio" e "Oricorio-Pa'u" su pokeAPI invece "oricorio-baile" e "oricorio-pau"
         case "Oricorio":
-            pkmnName = "Oricorio-baile"
+            pkmn.name = "Oricorio-baile"
             break;
         case "Oricorio-Pa'u":
-            pkmnName = "Oricorio-pau"
+            pkmn.name = "Oricorio-pau"
             break;
         // LYCANROC: la forma base su showdown è "lycanroc" su pokeAPI "lycanroc-midday"
         case "Lycanroc":
-            pkmnName = "Lycanroc-midday"
+            pkmn.name = "Lycanroc-midday"
             break;
         // WISHIWASHI: su showdown Wishiwashi da solo si chiama "Wishiwashi" su pokeAPI "Wishiwashi-solo"
         case "Wishiwashi":
-            pkmnName = "Wishiwashi-solo"
+            pkmn.name = "Wishiwashi-solo"
             break;
         // ARCEUS E SILVALLY: un altro parto
         // MINIOR: su showdown esiste solo una versione meteora, su pokeAPI una per ogni colore, inoltre su showdown il colore base è rosso
         case "Minior-Meteor":
-            pkmnName = "Minior-red-meteor"
+            pkmn.name = "Minior-red-meteor"
             break;
         case "Minior":
-            pkmnName = "Minior-red"
+            pkmn.name = "Minior-red"
             break;
         // MIMIKYU: pokeAPI e showdown hanno dei nomi leggermente diversi
         case "Mimikyu":
-            pkmnName = "Mimikyu-disguised"
+            pkmn.name = "Mimikyu-disguised"
             break;
         case "Mimikyu-Busted-Totem":
-            pkmnName = "Mimikyu-totem-busted"
+            pkmn.name = "Mimikyu-totem-busted"
             break;
         case "Mimikyu-Totem":
-            pkmnName = "Mimikyu-totem-disguised"
+            pkmn.name = "Mimikyu-totem-disguised"
             break;
         // NECROZMA: anche qua nomi leggermente diversi
         case "Necrozma-Dawn-Wings":
-            pkmnName = "Necrozma-dawn"
+            pkmn.name = "Necrozma-dawn"
             break;
         case "Necrozma-Dusk-Mane":
-            pkmnName = "Necrozma-dusk"
+            pkmn.name = "Necrozma-dusk"
             break;
         // CRAMORANT: su pokeAPI non ci sono le varianti "gorging" e "gulping"
         case "Cramorant-Gorging":
-            pkmnName = "Cramorant"
+            pkmn.name = "Cramorant"
             break;
         case "Cramorant-Gulping":
-            pkmnName = "Cramorant"
+            pkmn.name = "Cramorant"
             break;
         // TOXTRICITY: anche qua nomi un pò diversi
         case "Toxtricity":
-            pkmnName = "Toxtricity-amped"
+            pkmn.name = "Toxtricity-amped"
             break;
         case "Toxtricity-Gmax":
-            pkmnName = "Toxtricity-amped-gmax"
+            pkmn.name = "Toxtricity-amped-gmax"
             break;
         // SINISTEA - POLTEAGEIST
         case "Sinistea-Antique":
-            pkmnName = "Sinistea"
+            pkmn.name = "Sinistea"
             break;
         case "Polteageist-Antique":
-            pkmnName = "Polteageist"
+            pkmn.name = "Polteageist"
             break;
         // EISCUE: la forma base ha nomi diversi
         case "Eiscue":
-            pkmnName = "Eiscue-ice"
+            pkmn.name = "Eiscue-ice"
             break;
         // MORPEKO: la versione Hangry non c'è su pokeAPI
         case "Morpeko-Hangry":
-            pkmnName = "Morpeko"
+            pkmn.name = "Morpeko"
             break;
         // ZACIAN - ZAMAZENTA: le versioni base hanno nomi diversi
         case "Zacian":
-            pkmnName = "Zacian-hero"
+            pkmn.name = "Zacian-hero"
             break;
         case "Zamazenta":
-            pkmnName = "Zamazenta-hero"
+            pkmn.name = "Zamazenta-hero"
             break;
         // URSHIFU: la variante single strike ha nomi diversi
         case "Urshifu":
-            pkmnName = "Urshifu-single-strike"
+            pkmn.name = "Urshifu-single-strike"
             break;
         case "Urshifu-Gmax":
-            pkmnName = "Urshifu-single-strike-gmax"
+            pkmn.name = "Urshifu-single-strike-gmax"
             break;
         // ZARUDE: la versione dada non c'è su pokeAPI
         case "Zarude-dada":
-            pkmnName = "Zarude"
+            pkmn.name = "Zarude"
             break;
         // I VARI TAPU: hanno lo spazio che separa i due nomi, vanno uniti con il trattino
         case "Tapu Koko":
-            pkmnName = "Tapu-Koko"
+            pkmn.name = "Tapu-Koko"
             break;
         case "Tapu Fini":
-            pkmnName = "Tapu-Fini"
+            pkmn.name = "Tapu-Fini"
             break;
         case "Tapu Lele":
-            pkmnName = "Tapu-Lele"
+            pkmn.name = "Tapu-Lele"
             break;
         case "Tapu Bulu":
-            pkmnName = "Tapu-Bulu"
+            pkmn.name = "Tapu-Bulu"
+            break;
+        // GASTRODON: gastrodon west viene chiamato solo gastrodon
+        case "Gastrodon":
+            pkmn.name = "Gastrodon-West"
+            break;
+        // DEOXYS: deoxys forma normale è chiamato "deoxys-normal"
+        case "Deoxys":
+            pkmn.name = "Deoxys-normal"
+            break;
+        // BURMY: forme alternative
+        case "Burmy":
+            pkmn.alternativeForm = true
+            pkmn.name = "Burmy-plant"
+            break;
+        case "Burmy-Sandy":
+            pkmn.alternativeForm = true
+            break;
+        case "Burmy-Trash":
+            pkmn.alternativeForm = true;
+            break;
+        // WORMADAM: sono pokemon diversi, ma showdown considera la forma plant come base
+        case "Wormadam":
+            pkmn.name = "Wormadam-plant"
+            break;
+        // SHELLOS: forme differenti
+        case "Shellos-East":
+            pkmn.alternativeForm = true;
+            break;
+        // GASTRODON: stessa cosa di Shellos
+        case "Gastrodon-East":
+            pkmn.alternativeForm = true;
+            break;
+        // BASCULIN: ha 2 colori diversi, considerati come pokemon diversi
+        case "Basculin":
+            pkmn.name = "Basculin-red-striped"
             break;
     }
-    return pkmnName
 }
 
 function deletePokemonGender(pkmnName){

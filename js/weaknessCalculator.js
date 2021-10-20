@@ -32,10 +32,21 @@ async function fetchInfoAndCalculateWeaknesses(){
     for(let i = 0; i < pokemons.length; i++){
         // pkmn -> Pokemon corrente
         let pkmn = pokemons[i]
+        let fetchResult;
+
+        if(pkmn.alternativeForm)
+            fetchResult = await pokedex.getPokemonFormByName(pkmn.name.toLowerCase()).catch(reason => {
+                throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
+            })
+        else
+            fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase()).catch(reason => {
+                throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
+            })
+
         // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono), se c'è un errore, questo viene preso dal catch e viene mandato un errore custom
-        let fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase()).catch(reason => {
-            throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
-        })
+        // fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase()).catch(reason => {
+        //    throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
+        // })
         // Aggiungo il json del pokemon in pokemonsData
         pokemonsData.push(fetchResult)
         // Aggiungo un nuovo elemento in addPokemonWeakness con il nome di quel pokemon
