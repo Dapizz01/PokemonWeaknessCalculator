@@ -1,4 +1,4 @@
-// Struttura oggetto pokemon:
+// Struttura oggetto pokemon: (contenuti in "pokemons")
 // "name" : nome del pokemon
 // "item": strumento del pokemon
 // "ability" : abilità del pokemon

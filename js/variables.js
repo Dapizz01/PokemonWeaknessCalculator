@@ -2,7 +2,7 @@
 
 
 /*
-    pokemonDataWeaknesses: {
+    pokemonsDataWeaknesses: {
         name: "",
         "tipo1": 2 // superefficace
         "tipo2": 1 // neutro

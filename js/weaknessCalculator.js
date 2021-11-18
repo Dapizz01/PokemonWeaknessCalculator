@@ -174,7 +174,7 @@ function updateExceptionWeaknesses(pkmn){
                     // Da fare la funzione che permette di modificare il valore di tutti i tipi super efficaci
                     break;
                 case "Wonder Guard":
-                    // Da fare funzione apposta
+                    wondeguard(element.name)
                     break;
                 default:
                     break;
@@ -287,6 +287,24 @@ function getAllMoves(singlePokemon){
     result.push(singlePokemon.move3.toLowerCase().replace(/ /g, "-"))
     result.push(singlePokemon.move4.toLowerCase().replace(/ /g, "-"))
     return result
+}
+
+
+//--------------------------------
+// Funzioni per gestire le abilità
+//--------------------------------
+
+function wondeguard(pkmnName){
+    // Ciclo che itera per ogni pokemon
+    pokemonsDataWeaknesses.forEach((pkmn) => {
+        if( pkmnName === pkmn.name )
+            // Object.keys trasforma un oggetto in array associativo (es: object.prop -> object[prop])
+            Object.keys(pkmn).forEach((key) => {
+                if(key != "name")
+                    if(pkmn[key] != 2 && pkmn[key] != 4)
+                        pkmn[key] = 0
+        })
+    })
 }
 
 /*
