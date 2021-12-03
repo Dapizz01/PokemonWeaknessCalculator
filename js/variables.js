@@ -2,35 +2,36 @@
 
 
 /*
-    pokemonsDataWeaknesses: {
+    pokemonsDataWeaknesses = [{
         name: "",
         "tipo1": 2 // superefficace
         "tipo2": 1 // neutro
         "tipo3": 0.5 // non efficace
         "tipo4": 0 // nessun effetto
-    }
+    }]
 */
 
-/*teamMovesEffectiveness =
-[{
-    ice:
-    {
-        "totalEffectiveness" : 2,
-        "effectiveMoves": [
-            {
-                "moveName": "flamethrower"
-                "pokemonOwner": "charizard"
-            },
-            ...
-        ],
-        "notEffectiveMoves": [
-            ...
-        ],
-        "immunities": [
-            .....
-        ]
-    }
-}]*/
+/*
+    teamMovesEffectiveness = [{
+        ice:
+        {
+            "totalEffectiveness" : 2,
+            "effectiveMoves": [
+                {
+                    "moveName": "flamethrower"
+                    "pokemonOwner": "charizard"
+                },
+                ...
+            ],
+            "notEffectiveMoves": [
+                ...
+            ],
+            "immunities": [
+                .....
+            ]
+        }
+    }]
+*/
 
 var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
 var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon

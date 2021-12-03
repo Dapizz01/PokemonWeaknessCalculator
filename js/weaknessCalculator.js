@@ -172,9 +172,10 @@ function updateExceptionWeaknesses(pkmn){
                 case "Prism Armor":
                 case "Solid Rock":
                     // Da fare la funzione che permette di modificare il valore di tutti i tipi super efficaci
+                    solidRock(element.name.toLowerCase())
                     break;
                 case "Wonder Guard":
-                    wondeguard(element.name)
+                    wondeGuard(element.name.toLowerCase())
                     break;
                 default:
                     break;
@@ -294,7 +295,8 @@ function getAllMoves(singlePokemon){
 // Funzioni per gestire le abilità
 //--------------------------------
 
-function wondeguard(pkmnName){
+// Sarebbe ideale unificare la ricerca di un pokemon in pokemonsDataWeaknesses in un'unica funzione (c'è duplicazione di codice)
+function wondeGuard(pkmnName){
     // Ciclo che itera per ogni pokemon
     pokemonsDataWeaknesses.forEach((pkmn) => {
         if( pkmnName === pkmn.name )
@@ -302,7 +304,20 @@ function wondeguard(pkmnName){
             Object.keys(pkmn).forEach((key) => {
                 if(key != "name")
                     if(pkmn[key] != 2 && pkmn[key] != 4)
-                        pkmn[key] = 0
+                        updateWeaknesses(pkmnName, key, 0)
+        })
+    })
+}
+
+function solidRock(pkmnName){
+    // Ciclo che itera per ogni pokemon
+    pokemonsDataWeaknesses.forEach((pkmn) => {
+        if( pkmnName === pkmn.name )
+            // Object.keys trasforma un oggetto in array associativo (es: object.prop -> object[prop])
+            Object.keys(pkmn).forEach((key) => {
+                if(key != "name")
+                    if(pkmn[key] == 2 || pkmn[key] == 4)
+                        updateWeaknesses(pkmnName, key, 0.75)
         })
     })
 }
