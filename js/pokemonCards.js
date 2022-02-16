@@ -1,3 +1,4 @@
+// Costruisce una card di un certo pokemon
 function buildNewCard(pkmn, apiData, pkmnWeaknesses){
     // name è il nome del pokemon
     let name = pkmn.name

@@ -1,5 +1,5 @@
-var ctxTypes = document.getElementById("graphTypes").getContext("2d")
-var ctxMoves = document.getElementById("graphMoves").getContext("2d")
+var ctxTypes = document.getElementById("graphTypes").getContext("2d") // Riferimento al div html del grafico DIFENSIVO
+var ctxMoves = document.getElementById("graphMoves").getContext("2d") // Riferimento al div html del grafico OFFENSIVO
 var chartTypes = "";
 var chartMoves = "";
 
@@ -10,6 +10,7 @@ Chart.defaults.color = "#ebdbb2"
 var typesBackgroundColor = ['#ccd675', '#88796f', '#9a87ed', '#fed25f', '#f8c2f8', '#b38273', '#f77e58', '#b3c0f9', '#9e9ed1', '#b8e196', '#e0c681', '#bcefff', '#e7e5e1', '#b680b8', '#f69ebd', '#bfa75f', '#b9b9c7' , '#43a1ff']
 var typesBorderColor = ['#87960e', '#3c2d23', '#503da6', '#e79200', '#e08ee0', '#5f2310', '#c72101', '#5d73d4', '#454593', '#389a01', '#ad8c34', '#6dd3f5', '#ada594', '#6a246e', '#dc3165', '#9e863d', '#b5b5c4', '#0c67c2']
 
+// Contiene le informazioni per costruire il grafico DIFENSIVO
 const tooltipWeakness = (tooltipItems) => {
     let outputString = ""
     pokemonsDataWeaknesses.forEach((element) => {
@@ -25,6 +26,7 @@ const tooltipWeakness = (tooltipItems) => {
     return outputString
 }
 
+// Contiene le informazioni per costruire il grafico OFFENSIVO
 const tooltipMoves = (tooltipItems) => {
     let outputString = ""
     Object.keys(teamMovesEffectiveness).forEach((key) => {
@@ -55,6 +57,7 @@ const tooltipMoves = (tooltipItems) => {
     return outputString
 }
 
+// Costruisce il grafico delle debolezze/resistenze DIFENSIVE del team
 function drawGraphTypes(){
     chartTypes = new Chart(ctxTypes, {
         type: "bar",
@@ -101,6 +104,7 @@ function drawGraphTypes(){
     })
 }
 
+// Costruisce il grafico delle debolezze/resistenze OFFENSIVE del team
 function drawGraphMoves(){
     let totalMoves = Array()
     let immunityMoves = Array()

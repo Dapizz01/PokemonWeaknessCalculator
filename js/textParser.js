@@ -1,3 +1,5 @@
+// Informazioni di tutti i pokemon del team
+let pokemons = Array()
 // Struttura oggetto pokemon: (contenuti in "pokemons")
 // "name" : nome del pokemon
 // "item": strumento del pokemon
@@ -7,9 +9,9 @@
 // "move3": mossa 3
 // "move4": mossa 4
 
-let pokemons = Array()
-let pokemonTextRaw = Array() // Contiene tutti i pokemon così come sono inseriti nel textarea
+let pokemonTextRaw = Array()    // Contiene tutti i pokemon così come sono inseriti nel textarea
 
+// Divide i pokemon del testo copy/paste di showdown (le info non sono elaborate, per questo si chiama "raw")
 function getAllPokemonsTextRaw(){
     let allPokemons = document.getElementById("pokeTeamText").value.split("\n\n");
     allPokemons.forEach(element => {
@@ -18,6 +20,7 @@ function getAllPokemonsTextRaw(){
     });
 }
 
+// Elabora le informazioni raw di ogni pokemon popolando l'array "pokemons" 
 function parseRawPokemonInfo(){
     // Per ogni pokemon memorizzato in pokemonTextRaw, trovo ogni valore importante e lo memorizzo come oggetto in pokemons
     pokemonTextRaw.forEach((element, index) => {
@@ -38,6 +41,7 @@ function parseRawPokemonInfo(){
     })
 }
 
+// Traduce il nome del pokemon dal suo formato raw
 function getPokemonNameRaw(pokemonRaw, pkmnIndex){
     let name;
 
@@ -63,6 +67,7 @@ function getPokemonNameRaw(pokemonRaw, pkmnIndex){
     return name;
 }
 
+// Traduce l'item del pokemon dal suo formato raw
 function getPokemonItemRaw(pokemonRaw, pkmnIndex){
     // Prima riga, prendo l'oggetto del pokemon che è la sottostringa dopo la @, escluso il primo spazio
     let item = pokemonRaw.split("\n")[0].split("@")[1]
@@ -74,6 +79,7 @@ function getPokemonItemRaw(pokemonRaw, pkmnIndex){
     }
 }
 
+// Traduce il nome del pokemon dal suo formato raw
 function getPokemonAbilityRaw(pokemonRaw, pkmnIndex){
     // Seconda riga, prendo il nome dopo lo spazio
     let ability = pokemonRaw.split("\n")[1].split(": ")[1]
@@ -84,7 +90,7 @@ function getPokemonAbilityRaw(pokemonRaw, pkmnIndex){
     return ability.substring(0, ability.length)
 }
 
-// Restituisce la mossa n° "index"
+// Restituisce la mossa n° "index" del pokemon indicato
 function getPokemonMovesRaw(pokemonRaw, index, pkmnIndex){
     // Cerco tutte le mosse di un certo pokemon e le memorizzo in moves, dopo ritorno quella richiesta da "index"
     // index va da 1 a 4
@@ -102,6 +108,7 @@ function getPokemonMovesRaw(pokemonRaw, index, pkmnIndex){
     return moves[index-1]
 }
 
+// Traduce i nomi delle diverse forme alternative nel formato utilizzato da pokeAPI
 function checkAlternativeForm(pkmn){
     switch(pkmn.name){
         // INDEEDEE (fixato)
@@ -375,6 +382,7 @@ function checkAlternativeForm(pkmn){
     }
 }
 
+// Elimina il genere del pokemon dal nome
 function deletePokemonGender(pkmnName){
     if(pkmnName.includes("(M)") || pkmnName.includes("(F)"))
         return pkmnName.substring(0, pkmnName.length-4)
@@ -382,6 +390,7 @@ function deletePokemonGender(pkmnName){
         return pkmnName
 }
 
+// Elimina il soprannome del pokemon dal nome
 function deleteUselessPokemonName(pkmnName){
     if(pkmnName.includes("(")){
         pkmnName = pkmnName.substring(pkmnName.indexOf("(")+1, pkmnName.indexOf(")"))
@@ -389,11 +398,18 @@ function deleteUselessPokemonName(pkmnName){
     return pkmnName;
 }
 
+// Elimina gli spazi extra dopo il nome del pokemon
 function deleteLastSpaces(element){
     while( element[element.length-1] == " " )
         element = element.substring(0, element.length-1)
     return element
 }
+
+// ANCORA DA FARE COME ECCEZIONI: SILVALLY, ARCEUS, VIVILLON e ALCREAMIE
+
+
+// Di seguito alcuni team per testare il funzionamento
+
 /* ESEMPIO:
 Palkia @ Life Orb  
 Ability: Telepathy  
@@ -461,7 +477,6 @@ Serious Nature
 
 */
 
-// ANCORA DA FARE COME ECCEZIONI: SILVALLY, ARCEUS, VIVILLON e ALCREAMIE
 
 /*
 Rayquaza @ White Herb  

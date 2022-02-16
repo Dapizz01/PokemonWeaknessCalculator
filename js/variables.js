@@ -1,6 +1,11 @@
 // Il file contiene la dichiarazione di tutte le variabili di "weaknessCalculator.js"
 
 
+
+
+var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
+
+var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
 /*
     pokemonsDataWeaknesses = [{
         name: "",
@@ -11,51 +16,23 @@
     }]
 */
 
-/*
-    teamMovesEffectiveness = [{
-        ice:
-        {
-            "totalEffectiveness" : 2,
-            "effectiveMoves": [
-                {
-                    "moveName": "flamethrower"
-                    "pokemonOwner": "charizard"
-                },
-                ...
-            ],
-            "notEffectiveMoves": [
-                ...
-            ],
-            "immunities": [
-                .....
-            ]
-        }
-    }]
-*/
-
-var pokemonsData = Array() // Contiene i dati fetchati da pokeAPI di ogni pokemon
-var pokemonsDataWeaknesses = Array() // Contiene le debolezze di ogni pokemon
-var pokedex = new Pokedex.Pokedex()
+var pokedex = new Pokedex.Pokedex() // Oggetto che peremette di effettuare le richieste a pokeAPI
 var errorMessage = ""
 
-let pokemonMoveScheme = {
+
+let pokemonMoveScheme = { // Struttura utilizzata per capire a quale pokemon appartiene una certa mossa
     moveName: "",
     pokemonOwner: ""
 }
 
-let typeEffectiveness = {
-    totalEffectiveness: 0,
-    effectiveMoves: [],
-    notEffectiveMoves: [],
-    immunities: []
-}
+
 
 var teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi tipi
     bug: {
-        totalEffectiveness: 0,
-        effectiveMoves: [],
-        notEffectiveMoves: [],
-        immunities: []
+        totalEffectiveness: 0,  // Efficacia complessiva del team su questo tipo
+        effectiveMoves: [],     // Contiene elementi di tipo pokemonMoveScheme
+        notEffectiveMoves: [],  // Contiene elementi di tipo pokemonMoveScheme
+        immunities: []          // Contiene elementi di tipo pokemonMoveScheme
     },
     dark: {
         totalEffectiveness: 0,
@@ -160,6 +137,28 @@ var teamMovesEffectiveness = {  // Contiene l'efficacia delle mosse sui diversi 
         immunities: []
     }
 }
+/*
+    teamMovesEffectiveness = [{
+        ice:
+        {
+            "totalEffectiveness" : 2,
+            "effectiveMoves": [
+                {
+                    "moveName": "flamethrower"
+                    "pokemonOwner": "charizard"
+                },
+                ...
+            ],
+            "notEffectiveMoves": [
+                ...
+            ],
+            "immunities": [
+                .....
+            ]
+        }
+    }]
+*/
+
 
 var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debolezza; <0 resistenza )
     bug: 0,
@@ -182,7 +181,7 @@ var teamWeaknesses = {  // Contiene le debolezze del team ad ogni tipo ( >0 debo
     water: 0
 }
 
-var teamImmunities = {  // Contiene il numero di pokemon immuni per tipo
+var teamImmunities = {  // Contiene il numero di pokemon immuni ad un certo tipo
     bug: 0,
     dark: 0,
     dragon: 0,
@@ -204,7 +203,8 @@ var teamImmunities = {  // Contiene il numero di pokemon immuni per tipo
 }
 
 
-// Struttura teamMoves:
+
+var teamMoves = Array()
 /*
     teamMoves = {
         "pokemonName": ...,
@@ -213,7 +213,7 @@ var teamImmunities = {  // Contiene il numero di pokemon immuni per tipo
         "type": ...,
     }
 */
-var teamMoves = Array()
+
 
 // Resetta le variabili al loro valore di default e resetta la pagina html
 function resetVariables(){
@@ -344,9 +344,11 @@ function resetVariables(){
     parsingMessage = ""
     correctFetch = true
     fetchMessage = ""
+
     // Reset pagina html
     document.getElementById("pokemonCards").innerHTML = "";
-    // != string perchè, dopo il destroy, chart.js reistanzia i vecchi chart come stringhe
+
+    // != undefined perchè, dopo il destroy, chart.js reistanzia i vecchi chart come undefined
     if(chartTypes != undefined && chartTypes != false)
         chartTypes.destroy();
     if(chartMoves != undefined && chartMoves != false)

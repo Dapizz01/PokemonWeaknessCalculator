@@ -27,6 +27,7 @@ async function buildAllCards(){
     }
 }
 
+// Per ogni pokemon, richiede le sue info a pokeAPI, le aggiunge a pokemonsData, e poi richiama le altre funzioni per il calcolo delle debolezze
 async function fetchInfoAndCalculateWeaknesses(){
     // Ciclo for (NON FOREACH) che itera ogni pokemon in "pokemons"
     for(let i = 0; i < pokemons.length; i++){
@@ -34,6 +35,7 @@ async function fetchInfoAndCalculateWeaknesses(){
         let pkmn = pokemons[i]
         let fetchResult;
 
+         // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono), se c'è un errore, questo viene preso dal catch e viene mandato un errore custom
         if(pkmn.alternativeForm)
             fetchResult = await pokedex.getPokemonFormByName(pkmn.name.toLowerCase()).catch(reason => {
                 throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
@@ -42,11 +44,7 @@ async function fetchInfoAndCalculateWeaknesses(){
             fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase()).catch(reason => {
                 throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
             })
-
-        // Fetch di pokeAPI di un certo pokemon (usando await rendo il ciclo sincrono), se c'è un errore, questo viene preso dal catch e viene mandato un errore custom
-        // fetchResult = await pokedex.getPokemonByName(pkmn.name.toLowerCase()).catch(reason => {
-        //    throw "Error! Pokemon " + pkmn.name.toLowerCase() + " not found\n"
-        // })
+        
         // Aggiungo il json del pokemon in pokemonsData
         pokemonsData.push(fetchResult)
         // Aggiungo un nuovo elemento in addPokemonWeakness con il nome di quel pokemon
@@ -58,8 +56,8 @@ async function fetchInfoAndCalculateWeaknesses(){
     calculateTeamWeakness()
 }
 
+// Analizza tutte le debolezze e l'efficacia della tipi di un solo pokemon "pkmn", SOLO IN DIFESA, NON IN ATTACCO
 async function evaluatePokemonWeaknesses(pkmn){
-    // Analizzo tutte le debolezze e l'efficacia della tipi di un solo pokemon "pkmn", SOLO IN DIFESA, NON IN ATTACCO
     let types = Array() // Insieme dei tipi di un pokemon
     
     // Prendo tutti i tipi del pokemon
@@ -75,16 +73,20 @@ async function evaluatePokemonWeaknesses(pkmn){
         let result = await pokedex.getTypeByName(currentType.type.name)
 
         // Aggiorno le debolezze del pokemon, modificando i tipi superefficaci, inefficaci, poco efficaci
-        updateWeaknesses(result.name, result.damage_relations.double_damage_from, 2)
-        updateWeaknesses(result.name, result.damage_relations.no_damage_from, 0)
-        updateWeaknesses(result.name, result.damage_relations.half_damage_from, 0.5)
+        updateWeaknesses(result.damage_relations.double_damage_from, 2)
+        updateWeaknesses(result.damage_relations.no_damage_from, 0)
+        updateWeaknesses(result.damage_relations.half_damage_from, 0.5)
     }
 
     // Aggiorno i tipi superefficaci / poco efficaci anche in base al tipo di abilità o di item che un certo pokemon possiede
     updateExceptionWeaknesses(pkmn)
 }
 
-function updateWeaknesses(name, weaknesses, value){
+// Aggiorna le debolezze/resistenze/immunità dell'ULTIMO pokemon inserito in pokemonsDataWeaknesses.
+// L'aggiornamento avviene considerando un suo tipo per volta (es. charizard, prima aggiorno in base al suo tipo volante, poi in base al suo tipo fuoco)
+// weaknesses: array che contiene tutti i tipi di cui bisogna aggiornare le debolezze/resistenze7immunità del pokemon
+// value: valore dell'efficacia dei tipi contenuti in "weaknesses" sul pokemon (2 indica che riceve danno superefficace, 0,5 indica che è resistente, 0 indica che è immune)
+function updateWeaknesses(weaknesses, value){
     // Prendo l'ultimo elemento dell'array (dato che aggiorniamo sempre solo l'ultimo elemento)
 	 let pkmn = pokemonsDataWeaknesses[pokemonsDataWeaknesses.length-1]
 		if(Array.isArray(weaknesses)){
@@ -103,8 +105,8 @@ function updateWeaknesses(name, weaknesses, value){
     return 0;
 }
 
+// Crea un nuovo elemento di pokemonsDataWeaknesses con tutti i tipi valorizzati ad 1 (Valore di default della debolezza ad un tipo)
 function addPokemonWeakness(name){
-    // Crea un nuovo elemento di pokemonsDataWeaknesses con tutti i tipi valorizzati ad 1
     pokemonsDataWeaknesses.push({
         name: name,
         normal: 1,
@@ -128,45 +130,46 @@ function addPokemonWeakness(name){
     })
 }
 
+// Aggiorna le debolezze nel caso il pokemon abbia un certo item o una certa abilita
+// Attenzione -> pkmn è un pokemon preso da pokeAPI, nel ciclo forEach "element" è uno dei pokemon preso in input,
+// per confrontarli trasformo il nome del pokemon in input in minuscolo e confronto se è uguale a quello di pokeAPI
 function updateExceptionWeaknesses(pkmn){
-    // Aggiorna le debolezze nel caso il pokemon abbia un certo item o una certa abilita
-    // Attenzione -> pkmn è un pokemon preso da pokeAPI, nel ciclo forEach "element" è uno dei pokemon preso in input, per confrontarli trasformo il nome del pokemon in input in minuscolo e confronto se è uguale a quello di pokeAPI
     let pkmnName = pkmn.name
     pokemons.forEach((element) => {
         if(element.name.toLowerCase() == pkmnName){
             switch(element.ability){
                 case "Dry Skin":
-                    updateWeaknesses(pkmnName, "fire", 1.25)
-                    updateWeaknesses(pkmnName, "water", 0)
+                    updateWeaknesses("fire", 1.25)
+                    updateWeaknesses("water", 0)
                     break;
                 case "Flash Fire":
-                    updateWeaknesses(pkmnName, "fire", 0)
+                    updateWeaknesses("fire", 0)
                     break;
                 case "Fluffy":
-                    updateWeaknesses(pkmnName, "fire", 2)
+                    updateWeaknesses("fire", 2)
                     break;
                 case "Heatproof":
                 case "Water Bubble":
-                    updateWeaknesses(pkmnName, "fire", 0.5)
+                    updateWeaknesses("fire", 0.5)
                     break;
                 case "Levitate":
-                    updateWeaknesses(pkmnName, "ground", 0)
+                    updateWeaknesses("ground", 0)
                     break;
                 case "Lightning Rod":
                 case "Motor Drive":
                 case "Volt Absorb":
-                    updateWeaknesses(pkmnName, "electric", 0)
+                    updateWeaknesses("electric", 0)
                     break;
                 case "Sap Sipper":
-                    updateWeaknesses(pkmnName, "grass", 0)
+                    updateWeaknesses("grass", 0)
                     break;
                 case "Storm Drain":
                 case "Water Absorb":
-                    updateWeaknesses(pkmnName, "water", 0)
+                    updateWeaknesses("water", 0)
                     break;
                 case "Thick Fat":
-                    updateWeaknesses(pkmnName, "ice", 0.5)
-                    updateWeaknesses(pkmnName, "fire", 0.5)
+                    updateWeaknesses("ice", 0.5)
+                    updateWeaknesses("fire", 0.5)
                     break;
                 case "Filter":
                 case "Prism Armor":
@@ -185,7 +188,7 @@ function updateExceptionWeaknesses(pkmn){
             if(element.item != null){
                 switch(element.item){
                     case "Air Baloon":
-                        updateWeaknesses(pkmnName, "ground", 0)
+                        updateWeaknesses("ground", 0)
                         break;
                     case "Ring Target":
                         // Da fare la funzione che permette di togliere tutti i 0x
@@ -199,6 +202,7 @@ function updateExceptionWeaknesses(pkmn){
     })
 }
 
+// Calcola le debolezze/resistenze DIFENSIVE complessive del team
 function calculateTeamWeakness(){
     // Ciclo che itera per ogni pokemon
     pokemonsDataWeaknesses.forEach((pkmn) => {
@@ -222,6 +226,7 @@ function calculateTeamWeakness(){
     })
 }
 
+// Calcola le debolezze/resistenze OFFENSIVE complessive del team
 async function getMovesEffectiveness(){
     let pokemonsList = Array()
     pokemons.forEach((element) => {
@@ -280,6 +285,7 @@ async function getMovesEffectiveness(){
     }
 }
 
+// Resistuisce tutte le mosse di un pokemon
 function getAllMoves(singlePokemon){
     let result = Array()
     // Per ogni pokemon memorizzo nell'array result il nome della mossa, tutto in minuscolo e sostituendo gli spazi con trattini (come vuole pokeAPI)
@@ -296,6 +302,7 @@ function getAllMoves(singlePokemon){
 //--------------------------------
 
 // Sarebbe ideale unificare la ricerca di un pokemon in pokemonsDataWeaknesses in un'unica funzione (c'è duplicazione di codice)
+
 function wondeGuard(pkmnName){
     // Ciclo che itera per ogni pokemon
     pokemonsDataWeaknesses.forEach((pkmn) => {
@@ -304,7 +311,7 @@ function wondeGuard(pkmnName){
             Object.keys(pkmn).forEach((key) => {
                 if(key != "name")
                     if(pkmn[key] != 2 && pkmn[key] != 4)
-                        updateWeaknesses(pkmnName, key, 0)
+                        updateWeaknesses(key, 0)
         })
     })
 }
@@ -317,7 +324,7 @@ function solidRock(pkmnName){
             Object.keys(pkmn).forEach((key) => {
                 if(key != "name")
                     if(pkmn[key] == 2 || pkmn[key] == 4)
-                        updateWeaknesses(pkmnName, key, 0.75)
+                        updateWeaknesses(key, 0.75)
         })
     })
 }
