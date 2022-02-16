@@ -4,6 +4,7 @@ Given a string containing all the pokemon details (with the Pokemon Showdown for
 ## How to use
 1. Paste in the text area the team text. The format must be the Showdown one.
 2. Click the button and wait.
+
 Here's the link: https://dapizz01.github.io/PokemonWeaknessCalculator/
 ## It's kind of slow
 It's a known issue, this website makes a lot of requests to [PokeAPI](https://github.com/PokeAPI/pokeapi) (around 30) and it takes some time to respond (from 1 ms to 500 ms). It's already implemented a cache system called [PokeAPI Wrapper JS]https://github.com/PokeAPI/pokeapi-js-wrapper).
