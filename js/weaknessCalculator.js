@@ -69,8 +69,8 @@ async function evaluatePokemonWeaknesses(pkmn){
     for(let i = 0; i < types.length; i++){
         // currentType è il tipo corrente
         let currentType = types[i]
-        // Fetch della pagina di pokeAPI di un certo tipo
-        let result = await pokedex.getTypeByName(currentType.type.name)
+        // Fetch da json/types.js di un certo tipo
+        let result = await getType(currentType.type.name)
 
         // Aggiorno le debolezze del pokemon, modificando i tipi superefficaci, inefficaci, poco efficaci
         updateWeaknesses(result.damage_relations.double_damage_from, 2)
@@ -80,6 +80,13 @@ async function evaluatePokemonWeaknesses(pkmn){
 
     // Aggiorno i tipi superefficaci / poco efficaci anche in base al tipo di abilità o di item che un certo pokemon possiede
     updateExceptionWeaknesses(pkmn)
+}
+
+// Funzione asincrona che prende i dati del tipo "name" dal file json/types.json
+async function getType(name){
+    let data = await fetch("json/types.json")
+    let json = await data.json()
+    return json[name]
 }
 
 // Aggiorna le debolezze/resistenze/immunità dell'ULTIMO pokemon inserito in pokemonsDataWeaknesses.
@@ -259,7 +266,7 @@ async function getMovesEffectiveness(){
         // Se la potenza della mossa non è 0 (quindi fa danno)
         if(teamMoves[i].power != null){
             // Fetch dei dati del tipo della mossa
-            let fetchResult = await pokedex.getTypeByName(teamMoves[i].type)
+            let fetchResult = await getType(teamMoves[i].type)
             let tempScheme = {
                 moveName: teamMoves[i].name,
                 pokemonOwner: teamMoves[i].pokemonName
